@@ -1,0 +1,2 @@
+com\movie\booking\gateway\ApiGatewayApplication.class
+com\movie\booking\gateway\filter\JwtAuthFilter.class

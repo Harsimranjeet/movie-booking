@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(del \"C:\\\\Users\\\\kkajn\\\\Downloads\\\\movie-booking\\\\booking-service\\\\src\\\\main\\\\java\\\\com\\\\movie\\\\booking\\\\booking\\\\config\\\\DataInitializer.java\")",
+      "Bash(del \"C:\\\\Users\\\\kkajn\\\\Downloads\\\\movie-booking\\\\payment-service\\\\src\\\\main\\\\java\\\\com\\\\movie\\\\booking\\\\payment\\\\config\\\\DataInitializer.java\")",
+      "Bash(rm \"/mnt/c/Users/kkajn/Downloads/movie-booking/booking-service/src/main/java/com/movie/booking/booking/config/DataInitializer.java\")",
+      "Bash(rm \"/mnt/c/Users/kkajn/Downloads/movie-booking/payment-service/src/main/java/com/movie/booking/payment/config/DataInitializer.java\")",
+      "Bash(python3 -c \"import docx; print\\('python-docx ok'\\)\")",
+      "Bash(python -c \"import docx\")",
+      "Bash(pip install:*)",
+      "Bash(python -c \"import docx; print\\(docx.__version__\\)\")",
+      "Bash(python generate_docs.py)",
+      "Bash(python -c ':*)"
+    ]
+  }
+}

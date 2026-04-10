@@ -1,0 +1,143 @@
+version: '3.8'
+
+# ── Shared environment ────────────────────────────────────────────────────────
+x-common-env: &common-env
+  EUREKA_URL: http://discovery-server:8761/eureka/
+  JWT_SECRET: mySecretKeyForMovieBookingPlatformMinimum256BitsLong
+
+x-common-depends: &common-depends
+  discovery-server:
+    condition: service_healthy
+
+services:
+
+  # ── Service Registry ─────────────────────────────────────────────────────────
+  discovery-server:
+    build:
+      context: ./discovery-server
+    container_name: discovery-server
+    ports:
+      - "8761:8761"
+    environment:
+      <<: *common-env
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8761/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ── API Gateway ───────────────────────────────────────────────────────────────
+  api-gateway:
+    build:
+      context: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      <<: *common-env
+    depends_on:
+      <<: *common-depends
+
+  # ── Business Services ─────────────────────────────────────────────────────────
+  user-service:
+    build:
+      context: ./user-service
+    container_name: user-service
+    ports:
+      - "8081:8081"
+    environment:
+      <<: *common-env
+      SERVER_PORT: 8081
+    depends_on:
+      <<: *common-depends
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8081/actuator/health"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+
+  movie-service:
+    build:
+      context: ./movie-service
+    container_name: movie-service
+    ports:
+      - "8082:8082"
+    environment:
+      <<: *common-env
+      SERVER_PORT: 8082
+    depends_on:
+      <<: *common-depends
+
+  theatre-service:
+    build:
+      context: ./theatre-service
+    container_name: theatre-service
+    ports:
+      - "8083:8083"
+    environment:
+      <<: *common-env
+      SERVER_PORT: 8083
+    depends_on:
+      <<: *common-depends
+
+  show-service:
+    build:
+      context: ./show-service
+    container_name: show-service
+    ports:
+      - "8084:8084"
+    environment:
+      <<: *common-env
+      SERVER_PORT: 8084
+    depends_on:
+      <<: *common-depends
+
+  seat-service:
+    build:
+      context: ./seat-service
+    container_name: seat-service
+    ports:
+      - "8085:8085"
+    environment:
+      <<: *common-env
+      SERVER_PORT: 8085
+    depends_on:
+      <<: *common-depends
+
+  booking-service:
+    build:
+      context: ./booking-service
+    container_name: booking-service
+    ports:
+      - "8086:8086"
+    environment:
+      <<: *common-env
+      SERVER_PORT: 8086
+    depends_on:
+      <<: *common-depends
+
+  payment-service:
+    build:
+      context: ./payment-service
+    container_name: payment-service
+    ports:
+      - "8087:8087"
+    environment:
+      <<: *common-env
+      SERVER_PORT: 8087
+    depends_on:
+      <<: *common-depends
+
+  offer-service:
+    build:
+      context: ./offer-service
+    container_name: offer-service
+    ports:
+      - "8088:8088"
+    environment:
+      <<: *common-env
+      SERVER_PORT: 8088
+    depends_on:
+      <<: *common-depends
