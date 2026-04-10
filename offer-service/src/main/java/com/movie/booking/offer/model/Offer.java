@@ -18,9 +18,9 @@ public class Offer {
     private int    minTickets;
     @Column(nullable=false) private LocalDate validFrom;
     @Column(nullable=false) private LocalDate validTo;
-    private int    maxUsesTotal;
-    private int    usedCount;
-    private int    maxUsesPerUser;
+    private int maxUsesTotal;
+    private int usedCount;
+    private int maxUsesPerUser;
     @Builder.Default private boolean active = true;
 
     public enum DiscountType { PERCENTAGE, FLAT, NTH_TICKET, MATINEE }
