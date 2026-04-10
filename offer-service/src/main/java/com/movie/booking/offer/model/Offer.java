@@ -9,19 +9,26 @@ import java.util.UUID;
 public class Offer {
     @Id @GeneratedValue(strategy=GenerationType.UUID)
     private UUID id;
-    @Column(nullable=false, unique=true) private String code;
-    @Column(nullable=false)              private String description;
+    @Column(nullable=false, unique=true)
+    private String code;
+    @Column(nullable=false)
+    private String description;
     @Enumerated(EnumType.STRING)
-    @Column(nullable=false) private DiscountType discountType;
-    @Column(nullable=false) private double discountValue;
+    @Column(nullable=false)
+    private DiscountType discountType;
+    @Column(nullable=false)
+    private double discountValue;
     private double maxDiscount;
     private int    minTickets;
-    @Column(nullable=false) private LocalDate validFrom;
-    @Column(nullable=false) private LocalDate validTo;
+    @Column(nullable=false)
+    private LocalDate validFrom;
+    @Column(nullable=false)
+    private LocalDate validTo;
     private int maxUsesTotal;
     private int usedCount;
     private int maxUsesPerUser;
-    @Builder.Default private boolean active = true;
+    @Builder.Default
+    private boolean active = true;
 
     public enum DiscountType { PERCENTAGE, FLAT, NTH_TICKET, MATINEE }
 }
