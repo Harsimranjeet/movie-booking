@@ -19,13 +19,18 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class SeatService {
 
-    private final SeatRepository    repo;
-    private final SeatLockService   lockService;
+    private final SeatRepository repo;
+    private final SeatLockService lockService;
 
-    // ── Read ──────────────────────────────────────────────────────────────────
 
-    public List<Seat> getByShow(UUID showId)                        { return repo.findByShowId(showId); }
-    public List<Seat> getAvailableByShow(UUID showId)               { return repo.findByShowIdAndStatus(showId, Seat.SeatStatus.AVAILABLE); }
+    public List<Seat> getByShow(UUID showId) {
+        return repo.findByShowId(showId);
+    }
+
+    public List<Seat> getAvailableByShow(UUID showId) {
+        return repo.findByShowIdAndStatus(showId, Seat.SeatStatus.AVAILABLE);
+    }
+
     public List<Seat> getByShowAndCategory(UUID showId, String cat) {
         Seat.SeatCategory c = Seat.SeatCategory.valueOf(cat.toUpperCase());
         return repo.findByShowIdAndCategory(showId, c);

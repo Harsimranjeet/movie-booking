@@ -8,13 +8,24 @@ import java.util.UUID;
 public class MovieDtos {
 
     @Data public static class CreateMovieRequest {
-        @NotBlank private String title;
+        @NotBlank
+        private String title;
+
         private String description;
-        @NotBlank private String language;
-        @NotBlank private String genre;
-        @Min(1)   private int durationMins;
+
+        @NotBlank
+        private String language;
+
+        @NotBlank
+        private String genre;
+
+        @Min(1)
+        private int durationMins;
+
         private String posterUrl;
+
         private String trailerUrl;
+
         private String certification;
     }
 

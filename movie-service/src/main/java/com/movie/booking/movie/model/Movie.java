@@ -16,15 +16,32 @@ public class Movie {
     @Id
     @GeneratedValue(strategy=GenerationType.UUID)
     private UUID id;
-    @Column(nullable=false) private String title;
-    @Column(length=2000)    private String description;
-    @Column(nullable=false) private String language;
-    @Column(nullable=false) private String genre;
+
+    @Column(nullable=false)
+    private String title;
+
+    @Column(length=2000)
+    private String description;
+
+    @Column(nullable=false)
+    private String language;
+
+    @Column(nullable=false)
+    private String genre;
+
     private int durationMins;
+
     private String posterUrl;
+
     private String trailerUrl;
+
     private String certification;
+
     private double rating;
-    @Builder.Default private boolean active = true;
-    @CreationTimestamp private Instant createdAt;
+
+    @Builder.Default
+    private boolean active = true;
+
+    @CreationTimestamp
+    private Instant createdAt;
 }

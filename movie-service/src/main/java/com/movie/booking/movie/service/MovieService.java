@@ -16,11 +16,25 @@ public class MovieService {
 
     private final MovieRepository repo;
 
-    public List<MovieResponse> getAll()                       { return repo.findByActiveTrueOrderByCreatedAtDesc().stream().map(this::toDto).toList(); }
-    public MovieResponse getById(UUID id)                     { return toDto(find(id)); }
-    public List<MovieResponse> getByLanguage(String lang)     { return repo.findByLanguageIgnoreCaseAndActiveTrue(lang).stream().map(this::toDto).toList(); }
-    public List<MovieResponse> getByGenre(String genre)       { return repo.findByGenreIgnoreCaseAndActiveTrue(genre).stream().map(this::toDto).toList(); }
-    public List<MovieResponse> search(String title)           { return repo.findByTitleContainingIgnoreCaseAndActiveTrue(title).stream().map(this::toDto).toList(); }
+    public List<MovieResponse> getAll() {
+        return repo.findByActiveTrueOrderByCreatedAtDesc().stream().map(this::toDto).toList();
+    }
+
+    public MovieResponse getById(String id) {
+        return toDto(find(id));
+    }
+
+    public List<MovieResponse> getByLanguage(String lang) {
+        return repo.findByLanguageIgnoreCaseAndActiveTrue(lang).stream().map(this::toDto).toList();
+    }
+
+    public List<MovieResponse> getByGenre(String genre) {
+        return repo.findByGenreIgnoreCaseAndActiveTrue(genre).stream().map(this::toDto).toList();
+    }
+
+    public List<MovieResponse> search(String title) {
+        return repo.findByTitleContainingIgnoreCaseAndActiveTrue(title).stream().map(this::toDto).toList();
+    }
 
     @Transactional
     public MovieResponse create(CreateMovieRequest req) {
@@ -35,24 +49,37 @@ public class MovieService {
 
     @Transactional
     public MovieResponse update(UUID id, UpdateMovieRequest req) {
-        Movie m = find(id);
-        if (req.getTitle()         != null) m.setTitle(req.getTitle());
-        if (req.getDescription()   != null) m.setDescription(req.getDescription());
-        if (req.getLanguage()      != null) m.setLanguage(req.getLanguage());
-        if (req.getGenre()         != null) m.setGenre(req.getGenre());
-        if (req.getDurationMins()  > 0)     m.setDurationMins(req.getDurationMins());
-        if (req.getPosterUrl()     != null) m.setPosterUrl(req.getPosterUrl());
-        if (req.getTrailerUrl()    != null) m.setTrailerUrl(req.getTrailerUrl());
+        Movie m = find(String.valueOf(id));
+        if (req.getTitle() != null) m.setTitle(req.getTitle());
+
+        if (req.getDescription() != null) m.setDescription(req.getDescription());
+
+        if (req.getLanguage() != null) m.setLanguage(req.getLanguage());
+
+        if (req.getGenre() != null) m.setGenre(req.getGenre());
+
+        if (req.getDurationMins()  > 0) m.setDurationMins(req.getDurationMins());
+
+        if (req.getPosterUrl() != null) m.setPosterUrl(req.getPosterUrl());
+
+        if (req.getTrailerUrl() != null) m.setTrailerUrl(req.getTrailerUrl());
+
         if (req.getCertification() != null) m.setCertification(req.getCertification());
-        if (req.getRating()        != null) m.setRating(req.getRating());
+
+        if (req.getRating() != null) m.setRating(req.getRating());
+
         return toDto(repo.save(m));
     }
 
     @Transactional
-    public void delete(UUID id) { Movie m = find(id); m.setActive(false); repo.save(m); }
+    public void delete(UUID id) {
+        Movie m = find(String.valueOf(id));
+        m.setActive(false);
+        repo.save(m);
+    }
 
-    private Movie find(UUID id) {
-        return repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Movie not found: " + id));
+    private Movie find(String id) {
+        return repo.findById(UUID.fromString(id)).orElseThrow(() -> new ResourceNotFoundException("Movie not found: " + id));
     }
 
     private MovieResponse toDto(Movie m) {

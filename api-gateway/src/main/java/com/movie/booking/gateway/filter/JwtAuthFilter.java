@@ -68,7 +68,9 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
     }
 
     @Override
-    public int getOrder() { return -1; }
+    public int getOrder() {
+        return -1;
+    }
 
     private Claims parseToken(String token) {
         SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));

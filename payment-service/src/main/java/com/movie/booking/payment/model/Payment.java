@@ -8,19 +8,38 @@ import java.util.UUID;
 @Entity @Table(name="payments")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class Payment {
-    @Id @GeneratedValue(strategy=GenerationType.UUID)
+
+    @Id
+    @GeneratedValue(strategy=GenerationType.UUID)
     private UUID id;
-    @Column(nullable=false, unique=true) private UUID bookingId;
-    @Column(nullable=false) private UUID userId;
-    @Column(nullable=false) private double amount;
-    @Column(nullable=false) private String currency;
-    @Enumerated(EnumType.STRING) @Column(nullable=false)
+
+    @Column(nullable=false, unique=true)
+    private UUID bookingId;
+
+    @Column(nullable=false)
+    private UUID userId;
+
+    @Column(nullable=false)
+    private double amount;
+
+    @Column(nullable=false)
+    private String currency;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable=false)
+
     private PaymentMethod method;
-    @Enumerated(EnumType.STRING) @Builder.Default
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
     private PaymentStatus status = PaymentStatus.INITIATED;
+
     private String transactionId;
+
     private String gatewayResponse;
+
     private String failureReason;
+
     @CreationTimestamp private Instant createdAt;
     private Instant processedAt;
 

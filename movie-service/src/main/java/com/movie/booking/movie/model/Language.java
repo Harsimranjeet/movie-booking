@@ -12,8 +12,13 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class Language {
-    @Id @GeneratedValue(strategy=GenerationType.UUID)
+    @Id
+    @GeneratedValue(strategy=GenerationType.UUID)
     private UUID id;
-    @Column(nullable=false, unique=true) private String code;
-    @Column(nullable=false)              private String name;
+
+    @Column(nullable=false, unique=true)
+    private String code;
+
+    @Column(nullable=false)
+    private String name;
 }

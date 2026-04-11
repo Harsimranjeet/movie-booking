@@ -8,6 +8,7 @@ import java.util.UUID;
 
 @Repository
 public interface ShowRepository extends JpaRepository<Show, UUID> {
+
     List<Show> findByMovieIdAndShowDate(UUID movieId, LocalDate date);
     List<Show> findByTheatreIdAndShowDate(UUID theatreId, LocalDate date);
     List<Show> findByMovieIdAndTheatreIdAndShowDate(UUID movieId, UUID theatreId, LocalDate date);

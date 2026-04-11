@@ -21,9 +21,9 @@ public class DataInitializer implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         if (offerRepo.count() > 0) return;
 
-        LocalDate today  = LocalDate.now();
-        LocalDate end    = today.plusMonths(3);
-        LocalDate endYr  = today.plusYears(1);
+        LocalDate today = LocalDate.now();
+        LocalDate end = today.plusMonths(3);
+        LocalDate endYr = today.plusYears(1);
 
         // 20% off (max ₹100) for 2+ tickets
         offer("SUMMER20", "20% off on 2 or more tickets this summer",

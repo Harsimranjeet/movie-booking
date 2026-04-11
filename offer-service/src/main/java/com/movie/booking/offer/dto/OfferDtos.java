@@ -7,24 +7,48 @@ import java.util.UUID;
 
 public class OfferDtos {
 
-    @Data public static class CreateOfferRequest {
-        @NotBlank private String code;
-        @NotBlank private String description;
-        @NotNull  private Offer.DiscountType discountType;
-        @Min(0)   private double discountValue;
+    @Data
+    public static class CreateOfferRequest {
+        @NotBlank
+        private String code;
+
+        @NotBlank
+        private String description;
+
+        @NotNull
+        private Offer.DiscountType discountType;
+
+        @Min(0)
+        private double discountValue;
+
         private double maxDiscount;
+
         private int    minTickets;
-        @NotNull private LocalDate validFrom;
-        @NotNull private LocalDate validTo;
+
+        @NotNull
+        private LocalDate validFrom;
+
+        @NotNull
+        private LocalDate validTo;
+
         private int maxUsesTotal;
+
         private int maxUsesPerUser;
     }
 
-    @Data public static class ApplyOfferRequest {
-        @NotBlank private String code;
-        @Min(1)   private int ticketCount;
-        @Min(0)   private double totalAmount;
-        @NotNull  private java.time.LocalTime showTime;
+    @Data
+    public static class ApplyOfferRequest {
+        @NotBlank
+        private String code;
+
+        @Min(1)
+        private int ticketCount;
+
+        @Min(0)
+        private double totalAmount;
+
+        @NotNull
+        private java.time.LocalTime showTime;
     }
 
     public record OfferResponse(UUID id, String code, String description,

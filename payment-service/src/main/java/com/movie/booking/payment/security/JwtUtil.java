@@ -41,10 +41,20 @@ public class JwtUtil {
             .parseSignedClaims(token).getPayload();
     }
 
-    public String extractUserId(String token) { return extractAll(token).getSubject(); }
-    public String extractRole(String token)   { return extractAll(token).get("role", String.class); }
+    public String extractUserId(String token) {
+        return extractAll(token).getSubject();
+    }
+
+    public String extractRole(String token) {
+        return extractAll(token).get("role", String.class);
+    }
 
     public boolean isValid(String token) {
-        try { extractAll(token); return true; } catch (Exception e) { return false; }
+        try {
+            extractAll(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

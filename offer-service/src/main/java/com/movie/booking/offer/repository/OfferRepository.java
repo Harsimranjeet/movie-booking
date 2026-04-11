@@ -9,6 +9,8 @@ import java.util.UUID;
 
 @Repository
 public interface OfferRepository extends JpaRepository<Offer, UUID> {
+
     Optional<Offer> findByCodeIgnoreCase(String code);
+
     List<Offer> findByActiveTrueAndValidFromLessThanEqualAndValidToGreaterThanEqual(LocalDate from, LocalDate to);
 }

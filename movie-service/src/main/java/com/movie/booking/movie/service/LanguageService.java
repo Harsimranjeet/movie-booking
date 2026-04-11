@@ -12,12 +12,18 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class LanguageService {
+
     private final LanguageRepository repo;
-    public List<Language> getAll() { return repo.findAll(); }
+
+    public List<Language> getAll() {
+        return repo.findAll();
+    }
+
     @Transactional
     public Language create(String code, String name) {
         return repo.save(Language.builder().code(code).name(name).build());
     }
+
     @Transactional
     public void delete(UUID id) {
         if (!repo.existsById(id)) throw new ResourceNotFoundException("Language not found");

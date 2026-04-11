@@ -19,10 +19,14 @@ public class PaymentService {
 
     private final PaymentRepository repo;
 
-    public PaymentResponse getById(UUID id)       { return toDto(find(id)); }
+    public PaymentResponse getById(UUID id) {
+        return toDto(find(id));
+    }
+
     public PaymentResponse getByBooking(UUID bid) {
         return toDto(repo.findByBookingId(bid).orElseThrow(() -> new ResourceNotFoundException("Payment not found for booking: " + bid)));
     }
+
     public List<PaymentResponse> getByUser(UUID uid) {
         return repo.findByUserId(uid).stream().map(this::toDto).toList();
     }

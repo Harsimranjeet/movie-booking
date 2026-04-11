@@ -19,13 +19,18 @@ public class BookingService {
 
     private final BookingRepository repo;
 
-    public BookingResponse getById(UUID id)         { return toDto(find(id)); }
-    public BookingResponse getByRef(String ref)     {
+    public BookingResponse getById(UUID id) {
+        return toDto(find(id));
+    }
+
+    public BookingResponse getByRef(String ref) {
         return toDto(repo.findByBookingRef(ref).orElseThrow(() -> new ResourceNotFoundException("Booking not found: " + ref)));
     }
+
     public List<BookingResponse> getByUser(UUID uid) {
         return repo.findByUserIdOrderByCreatedAtDesc(uid).stream().map(this::toDto).toList();
     }
+
     public List<BookingResponse> getByShow(UUID sid) {
         return repo.findByShowId(sid).stream().map(this::toDto).toList();
     }

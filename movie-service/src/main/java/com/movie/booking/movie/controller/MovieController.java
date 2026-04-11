@@ -48,8 +48,8 @@ public class MovieController {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Movie retrieved"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Movie not found")
     })
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<MovieResponse>> getById(@PathVariable UUID id) {
+    @GetMapping("/id")
+    public ResponseEntity<ApiResponse<MovieResponse>> getById(@RequestParam String  id) {
         return ResponseEntity.ok(ApiResponse.ok("Movie retrieved", movieService.getById(id)));
     }
 
@@ -63,15 +63,15 @@ public class MovieController {
 
     @Operation(summary = "List movies by language", description = "Returns all movies available in the specified language.")
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Movies retrieved")
-    @GetMapping("/language/{language}")
-    public ResponseEntity<ApiResponse<List<MovieResponse>>> byLanguage(@PathVariable String language) {
+    @GetMapping("/language")
+    public ResponseEntity<ApiResponse<List<MovieResponse>>> byLanguage(@RequestParam String language) {
         return ResponseEntity.ok(ApiResponse.ok("Movies retrieved", movieService.getByLanguage(language)));
     }
 
     @Operation(summary = "List movies by genre", description = "Returns all movies belonging to the specified genre.")
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Movies retrieved")
-    @GetMapping("/genre/{genre}")
-    public ResponseEntity<ApiResponse<List<MovieResponse>>> byGenre(@PathVariable String genre) {
+    @GetMapping("/genre")
+    public ResponseEntity<ApiResponse<List<MovieResponse>>> byGenre(@RequestParam String genre) {
         return ResponseEntity.ok(ApiResponse.ok("Movies retrieved", movieService.getByGenre(genre)));
     }
 
@@ -107,14 +107,12 @@ public class MovieController {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Access denied"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Movie not found")
     })
-    @DeleteMapping("/{id}")
+    @DeleteMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<Void>> delete(@RequestParam UUID id) {
         movieService.delete(id);
         return ResponseEntity.ok(ApiResponse.ok("Movie deleted"));
     }
-
-    // ── Genres ────────────────────────────────────────────────────────────────
 
     @Operation(summary = "List all genres", description = "Returns all available movie genres.")
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Genres retrieved")
@@ -143,14 +141,12 @@ public class MovieController {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Access denied"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Genre not found")
     })
-    @DeleteMapping("/genres/{id}")
+    @DeleteMapping("/genres")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Void>> deleteGenre(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<Void>> deleteGenre(@RequestParam UUID id) {
         genreService.delete(id);
         return ResponseEntity.ok(ApiResponse.ok("Genre deleted"));
     }
-
-    // ── Languages ─────────────────────────────────────────────────────────────
 
     @Operation(summary = "List all languages", description = "Returns all available movie languages.")
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Languages retrieved")
@@ -179,9 +175,9 @@ public class MovieController {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Access denied"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Language not found")
     })
-    @DeleteMapping("/languages/{id}")
+    @DeleteMapping("/languages")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Void>> deleteLanguage(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<Void>> deleteLanguage(@RequestParam UUID id) {
         languageService.delete(id);
         return ResponseEntity.ok(ApiResponse.ok("Language deleted"));
     }
