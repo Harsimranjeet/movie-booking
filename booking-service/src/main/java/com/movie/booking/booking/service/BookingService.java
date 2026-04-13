@@ -1,4 +1,5 @@
 package com.movie.booking.booking.service;
+import com.movie.booking.booking.client.SeatClient;
 import com.movie.booking.booking.dto.BookingDtos.*;
 import com.movie.booking.booking.exception.BadRequestException;
 import com.movie.booking.booking.exception.ResourceNotFoundException;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -18,6 +20,7 @@ import java.util.UUID;
 public class BookingService {
 
     private final BookingRepository repo;
+    private final SeatClient seatClient;
 
     public BookingResponse getById(String id) {
         log.debug("Fetching booking by id={}", id);
@@ -48,11 +51,6 @@ public class BookingService {
         if (req.getSeatIds().size() != req.getTicketCount())
             throw new BadRequestException("Seat count does not match ticket count");
 
-        double finalAmount = req.getTotalAmount();
-        double discountAmount = 0;
-        // Offer discount is pre-calculated by the client via offer-service
-        // Here we just record what was agreed
-
         String ref = "BK" + System.currentTimeMillis() + UUID.randomUUID().toString().substring(0, 4).toUpperCase();
 
         Booking b = Booking.builder()
@@ -60,13 +58,21 @@ public class BookingService {
             .theatreId(req.getTheatreId()).movieId(req.getMovieId())
             .seatIds(req.getSeatIds()).ticketCount(req.getTicketCount())
             .totalAmount(req.getTotalAmount())
-            .discountAmount(discountAmount).finalAmount(finalAmount)
+            .discountAmount(0).finalAmount(req.getTotalAmount())
             .offerCode(req.getOfferCode())
             .status(Booking.BookingStatus.PENDING)
             .bookingRef(ref).build();
 
         Booking saved = repo.save(b);
-        log.info("Booking created: ref={}, user={}", ref, userId);
+
+        // Lock seats in seat-service — if this fails the @Transactional rolls back the booking insert
+        seatClient.reserve(Map.of(
+            "seatIds",     req.getSeatIds().stream().map(UUID::toString).toList(),
+            "bookingId",   saved.getId().toString(),
+            "lockMinutes", 10
+        ));
+
+        log.info("Booking created and seats locked: ref={}, user={}, seats={}", ref, userId, req.getSeatIds());
         return toDto(saved);
     }
 
@@ -77,8 +83,13 @@ public class BookingService {
             throw new BadRequestException("Booking is not in PENDING state");
         b.setStatus(Booking.BookingStatus.CONFIRMED);
         b.setConfirmedAt(Instant.now());
+        Booking saved = repo.save(b);
+
+        // Mark seats as BOOKED in seat-service
+        seatClient.confirm(saved.getId().toString());
+
         log.info("Booking confirmed: ref={}", b.getBookingRef());
-        return toDto(repo.save(b));
+        return toDto(saved);
     }
 
     @Transactional
@@ -90,8 +101,13 @@ public class BookingService {
             throw new BadRequestException("Booking is already cancelled");
         b.setStatus(Booking.BookingStatus.CANCELLED);
         b.setCancelledAt(Instant.now());
+        Booking saved = repo.save(b);
+
+        // Release seats back to AVAILABLE in seat-service
+        seatClient.release(saved.getId().toString());
+
         log.info("Booking cancelled: ref={}", b.getBookingRef());
-        return toDto(repo.save(b));
+        return toDto(saved);
     }
 
     private Booking find(UUID id) {

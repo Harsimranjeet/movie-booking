@@ -13,6 +13,7 @@ public interface SeatRepository extends JpaRepository<Seat, UUID> {
     List<Seat> findByShowId(UUID showId);
     List<Seat> findByShowIdAndStatus(UUID showId, Seat.SeatStatus status);
     List<Seat> findByShowIdAndCategory(UUID showId, Seat.SeatCategory category);
+    List<Seat> findByLockedByBookingId(UUID bookingId);
 
     @Modifying
     @Query("UPDATE Seat s SET s.status = 'AVAILABLE', s.lockedByBookingId = null, s.lockExpiresAt = null " +

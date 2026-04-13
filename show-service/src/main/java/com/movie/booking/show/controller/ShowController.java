@@ -28,13 +28,20 @@ public class ShowController {
 
     private final ShowService service;
 
+    @Operation(summary = "List all shows", description = "Returns all shows across all theatres and dates.")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Shows retrieved")
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<ShowResponse>>> getAll() {
+        return ResponseEntity.ok(ApiResponse.ok("Shows retrieved", service.getAll()));
+    }
+
     @Operation(summary = "Get show by ID",
                description = "Returns details of a single show.")
     @ApiResponses({
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Show retrieved"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Show not found")
     })
-    @GetMapping
+    @GetMapping(params = "id")
     public ResponseEntity<ApiResponse<ShowResponse>> getById(@RequestParam("id") String id) {
         return ResponseEntity.ok(ApiResponse.ok("Show retrieved", service.getById(id)));
     }

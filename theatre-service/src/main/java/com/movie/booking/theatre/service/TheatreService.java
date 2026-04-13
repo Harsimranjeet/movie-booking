@@ -92,6 +92,16 @@ public class TheatreService {
         log.info("Theatre deactivated: id={}, name='{}'", id, theatre.getName());
     }
 
+    public List<ScreenResponse> getAllScreens() {
+        log.debug("Fetching all active screens");
+        List<ScreenResponse> screens = screenRepo.findByActiveTrue()
+                .stream()
+                .map(this::toScreenDto)
+                .toList();
+        log.debug("Found {} active screens", screens.size());
+        return screens;
+    }
+
     public List<ScreenResponse> getScreens(String theatreId) {
         log.debug("Fetching screens for theatreId={}", theatreId);
         findTheatre(UUID.fromString(theatreId));

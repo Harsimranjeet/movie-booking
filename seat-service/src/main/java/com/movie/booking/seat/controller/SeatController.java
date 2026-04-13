@@ -80,7 +80,6 @@ public class SeatController {
     })
     @PostMapping("/reserve")
     public ResponseEntity<ApiResponse<List<Seat>>> reserve(@RequestBody Map<String, Object> body) {
-        @SuppressWarnings("unchecked")
         List<UUID> seatIds = ((List<String>) body.get("seatIds")).stream().map(UUID::fromString).toList();
         UUID bookingId = UUID.fromString((String) body.get("bookingId"));
         int lockMins  = body.containsKey("lockMinutes") ? (int) body.get("lockMinutes") : 10;

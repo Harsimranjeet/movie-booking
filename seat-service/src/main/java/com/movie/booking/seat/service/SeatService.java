@@ -100,27 +100,29 @@ public class SeatService {
 
     @Transactional
     public void confirmSeats(String bookingId) {
-        repo.findByShowId(UUID.fromString(bookingId)).stream()
-            .filter(s -> bookingId.equals(s.getLockedByBookingId()))
-            .forEach(s -> {
-                s.setStatus(Seat.SeatStatus.BOOKED);
-                s.setLockExpiresAt(null);
-                repo.save(s);
-            });
+        UUID bookingUuid = UUID.fromString(bookingId);
+        List<Seat> seats = repo.findByLockedByBookingId(bookingUuid);
+        log.info("Confirming {} seats for bookingId={}", seats.size(), bookingId);
+        seats.forEach(s -> {
+            s.setStatus(Seat.SeatStatus.BOOKED);
+            s.setLockExpiresAt(null);
+        });
+        repo.saveAll(seats);
     }
 
-    // ── Release — LOCKED/BOOKED → AVAILABLE ──────────────────────────────────
+    // ── Release — LOCKED → AVAILABLE ─────────────────────────────────────────
 
     @Transactional
     public void releaseSeats(String bookingId) {
-        repo.findAll().stream()
-            .filter(s -> bookingId.equals(s.getLockedByBookingId()))
-            .forEach(s -> {
-                s.setStatus(Seat.SeatStatus.AVAILABLE);
-                s.setLockedByBookingId(null);
-                s.setLockExpiresAt(null);
-                repo.save(s);
-            });
+        UUID bookingUuid = UUID.fromString(bookingId);
+        List<Seat> seats = repo.findByLockedByBookingId(bookingUuid);
+        log.info("Releasing {} seats for bookingId={}", seats.size(), bookingId);
+        seats.forEach(s -> {
+            s.setStatus(Seat.SeatStatus.AVAILABLE);
+            s.setLockedByBookingId(null);
+            s.setLockExpiresAt(null);
+        });
+        repo.saveAll(seats);
     }
 
     // ── TTL cleanup — runs every 60 seconds ───────────────────────────────────

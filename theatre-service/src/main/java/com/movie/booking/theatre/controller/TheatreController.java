@@ -89,13 +89,20 @@ public class TheatreController {
         return ResponseEntity.ok(ApiResponse.ok("Theatre deleted"));
     }
 
+    @Operation(summary = "List all screens", description = "Returns all active screens across all theatres.")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Screens retrieved")
+    @GetMapping("/screens")
+    public ResponseEntity<ApiResponse<List<ScreenResponse>>> getAllScreens() {
+        return ResponseEntity.ok(ApiResponse.ok("Screens retrieved", service.getAllScreens()));
+    }
+
     @Operation(summary = "List screens for a theatre",
                description = "Returns all screens configured for the specified theatre.")
     @ApiResponses({
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Screens retrieved"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Theatre not found")
     })
-    @GetMapping("screens")
+    @GetMapping(value = "/screens", params = "theatreId")
     public ResponseEntity<ApiResponse<List<ScreenResponse>>> getScreens(@RequestParam("theatreId") String theatreId) {
         return ResponseEntity.ok(ApiResponse.ok("Screens retrieved", service.getScreens(theatreId)));
     }

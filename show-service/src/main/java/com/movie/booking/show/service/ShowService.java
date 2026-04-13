@@ -17,6 +17,13 @@ public class ShowService {
 
     private final ShowRepository repo;
 
+    public List<ShowResponse> getAll() {
+        log.debug("Fetching all shows");
+        List<ShowResponse> shows = repo.findAll().stream().map(this::toDto).toList();
+        log.debug("Found {} shows", shows.size());
+        return shows;
+    }
+
     public ShowResponse getById(String id) {
         log.debug("Fetching show by id={}", id);
         return toDto(find(UUID.fromString(id)));

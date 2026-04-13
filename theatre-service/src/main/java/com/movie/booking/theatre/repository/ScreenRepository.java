@@ -8,5 +8,6 @@ import java.util.UUID;
 
 @Repository
 public interface ScreenRepository extends JpaRepository<Screen, UUID> {
+    List<Screen> findByActiveTrue();
     List<Screen> findByTheatreIdAndActiveTrue(UUID theatreId);
 }
