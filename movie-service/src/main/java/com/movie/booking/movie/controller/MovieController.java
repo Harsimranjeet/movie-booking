@@ -30,11 +30,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class MovieController {
 
-    private final MovieService    movieService;
-    private final GenreService    genreService;
+    private final MovieService movieService;
+    private final GenreService genreService;
     private final LanguageService languageService;
 
-    // ── Movies ────────────────────────────────────────────────────────────────
 
     @Operation(summary = "List all movies", description = "Returns all active movies in the catalogue.")
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Movies retrieved")

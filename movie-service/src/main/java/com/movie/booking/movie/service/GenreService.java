@@ -4,11 +4,13 @@ import com.movie.booking.movie.model.Genre;
 import com.movie.booking.movie.repository.GenreRepository;
 import com.movie.booking.movie.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class GenreService {
@@ -16,17 +18,25 @@ public class GenreService {
     private final GenreRepository repo;
 
     public List<Genre> getAll() {
-        return repo.findAll();
+        log.debug("Fetching all genres");
+        List<Genre> genres = repo.findAll();
+        log.debug("Found {} genres", genres.size());
+        return genres;
     }
 
     @Transactional
     public Genre create(String name, String description) {
-        return repo.save(Genre.builder().name(name).description(description).build());
+        log.info("Creating genre: name='{}'", name);
+        Genre saved = repo.save(Genre.builder().name(name).description(description).build());
+        log.info("Genre created: id={}, name='{}'", saved.getId(), saved.getName());
+        return saved;
     }
 
     @Transactional
     public void delete(UUID id) {
+        log.info("Deleting genre: id={}", id);
         if (!repo.existsById(id)) throw new ResourceNotFoundException("Genre not found");
         repo.deleteById(id);
+        log.info("Genre deleted: id={}", id);
     }
 }

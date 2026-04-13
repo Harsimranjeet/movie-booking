@@ -5,11 +5,13 @@ import com.movie.booking.movie.exception.ResourceNotFoundException;
 import com.movie.booking.movie.model.Movie;
 import com.movie.booking.movie.repository.MovieRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MovieService {
@@ -17,38 +19,55 @@ public class MovieService {
     private final MovieRepository repo;
 
     public List<MovieResponse> getAll() {
-        return repo.findByActiveTrueOrderByCreatedAtDesc().stream().map(this::toDto).toList();
+        log.debug("Fetching all active movies");
+        List<MovieResponse> movies = repo.findByActiveTrueOrderByCreatedAtDesc().stream().map(this::toDto).toList();
+        log.debug("Found {} active movies", movies.size());
+        return movies;
     }
 
     public MovieResponse getById(String id) {
+        log.debug("Fetching movie by id={}", id);
         return toDto(find(id));
     }
 
     public List<MovieResponse> getByLanguage(String lang) {
-        return repo.findByLanguageIgnoreCaseAndActiveTrue(lang).stream().map(this::toDto).toList();
+        log.debug("Fetching movies by language={}", lang);
+        List<MovieResponse> movies = repo.findByLanguageIgnoreCaseAndActiveTrue(lang).stream().map(this::toDto).toList();
+        log.debug("Found {} movies for language={}", movies.size(), lang);
+        return movies;
     }
 
     public List<MovieResponse> getByGenre(String genre) {
-        return repo.findByGenreIgnoreCaseAndActiveTrue(genre).stream().map(this::toDto).toList();
+        log.debug("Fetching movies by genre={}", genre);
+        List<MovieResponse> movies = repo.findByGenreIgnoreCaseAndActiveTrue(genre).stream().map(this::toDto).toList();
+        log.debug("Found {} movies for genre={}", movies.size(), genre);
+        return movies;
     }
 
     public List<MovieResponse> search(String title) {
-        return repo.findByTitleContainingIgnoreCaseAndActiveTrue(title).stream().map(this::toDto).toList();
+        log.debug("Searching movies with title containing '{}'", title);
+        List<MovieResponse> results = repo.findByTitleContainingIgnoreCaseAndActiveTrue(title).stream().map(this::toDto).toList();
+        log.debug("Search for '{}' returned {} result(s)", title, results.size());
+        return results;
     }
 
     @Transactional
     public MovieResponse create(CreateMovieRequest req) {
+        log.info("Creating movie: title='{}', language='{}', genre='{}'", req.getTitle(), req.getLanguage(), req.getGenre());
         Movie m = Movie.builder()
             .title(req.getTitle()).description(req.getDescription())
             .language(req.getLanguage()).genre(req.getGenre())
             .durationMins(req.getDurationMins()).posterUrl(req.getPosterUrl())
             .trailerUrl(req.getTrailerUrl()).certification(req.getCertification())
             .build();
-        return toDto(repo.save(m));
+        MovieResponse saved = toDto(repo.save(m));
+        log.info("Movie created: id={}, title='{}'", saved.getId(), saved.getTitle());
+        return saved;
     }
 
     @Transactional
     public MovieResponse update(UUID id, UpdateMovieRequest req) {
+        log.info("Updating movie: id={}", id);
         Movie m = find(String.valueOf(id));
         if (req.getTitle() != null) m.setTitle(req.getTitle());
 
@@ -68,14 +87,18 @@ public class MovieService {
 
         if (req.getRating() != null) m.setRating(req.getRating());
 
-        return toDto(repo.save(m));
+        MovieResponse updated = toDto(repo.save(m));
+        log.info("Movie updated: id={}, title='{}'", updated.getId(), updated.getTitle());
+        return updated;
     }
 
     @Transactional
     public void delete(UUID id) {
+        log.info("Soft-deleting movie: id={}", id);
         Movie m = find(String.valueOf(id));
         m.setActive(false);
         repo.save(m);
+        log.info("Movie deactivated: id={}, title='{}'", id, m.getTitle());
     }
 
     private Movie find(String id) {

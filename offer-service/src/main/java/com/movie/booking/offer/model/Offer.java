@@ -32,7 +32,7 @@ public class Offer {
 
     private double maxDiscount;
 
-    private int    minTickets;
+    private int minTickets;
 
     @Column(nullable=false)
     private LocalDate validFrom;
@@ -49,5 +49,7 @@ public class Offer {
     @Builder.Default
     private boolean active = true;
 
-    public enum DiscountType { PERCENTAGE, FLAT, NTH_TICKET, MATINEE }
+    public enum DiscountType {
+        PERCENTAGE, FLAT, NTH_TICKET, MATINEE
+    }
 }

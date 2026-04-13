@@ -20,19 +20,27 @@ public class BookingService {
     private final BookingRepository repo;
 
     public BookingResponse getById(UUID id) {
+        log.debug("Fetching booking by id={}", id);
         return toDto(find(id));
     }
 
     public BookingResponse getByRef(String ref) {
+        log.debug("Fetching booking by ref='{}'", ref);
         return toDto(repo.findByBookingRef(ref).orElseThrow(() -> new ResourceNotFoundException("Booking not found: " + ref)));
     }
 
     public List<BookingResponse> getByUser(UUID uid) {
-        return repo.findByUserIdOrderByCreatedAtDesc(uid).stream().map(this::toDto).toList();
+        log.debug("Fetching bookings for userId={}", uid);
+        List<BookingResponse> bookings = repo.findByUserIdOrderByCreatedAtDesc(uid).stream().map(this::toDto).toList();
+        log.debug("Found {} bookings for userId={}", bookings.size(), uid);
+        return bookings;
     }
 
     public List<BookingResponse> getByShow(UUID sid) {
-        return repo.findByShowId(sid).stream().map(this::toDto).toList();
+        log.debug("Fetching bookings for showId={}", sid);
+        List<BookingResponse> bookings = repo.findByShowId(sid).stream().map(this::toDto).toList();
+        log.debug("Found {} bookings for showId={}", bookings.size(), sid);
+        return bookings;
     }
 
     @Transactional

@@ -24,16 +24,25 @@ public class SeatService {
 
 
     public List<Seat> getByShow(UUID showId) {
-        return repo.findByShowId(showId);
+        log.debug("Fetching all seats for showId={}", showId);
+        List<Seat> seats = repo.findByShowId(showId);
+        log.debug("Found {} seats for showId={}", seats.size(), showId);
+        return seats;
     }
 
     public List<Seat> getAvailableByShow(UUID showId) {
-        return repo.findByShowIdAndStatus(showId, Seat.SeatStatus.AVAILABLE);
+        log.debug("Fetching available seats for showId={}", showId);
+        List<Seat> seats = repo.findByShowIdAndStatus(showId, Seat.SeatStatus.AVAILABLE);
+        log.debug("Found {} available seats for showId={}", seats.size(), showId);
+        return seats;
     }
 
     public List<Seat> getByShowAndCategory(UUID showId, String cat) {
+        log.debug("Fetching seats for showId={}, category='{}'", showId, cat);
         Seat.SeatCategory c = Seat.SeatCategory.valueOf(cat.toUpperCase());
-        return repo.findByShowIdAndCategory(showId, c);
+        List<Seat> seats = repo.findByShowIdAndCategory(showId, c);
+        log.debug("Found {} seats for showId={}, category='{}'", seats.size(), showId, cat);
+        return seats;
     }
 
     // ── Bulk create seats for a show ──────────────────────────────────────────
@@ -54,26 +63,33 @@ public class SeatService {
 
     @Transactional
     public List<Seat> reserveSeats(List<UUID> seatIds, UUID bookingId, int lockMinutes) {
+        log.info("Reserving seats: bookingId={}, seatCount={}, lockMinutes={}", bookingId, seatIds.size(), lockMinutes);
         List<FileLock> acquiredLocks = new ArrayList<>();
         List<Seat> seats = new ArrayList<>();
 
         try {
             for (UUID seatId : seatIds) {
                 FileLock lock = lockService.tryLock(seatId);
-                if (lock == null)
+                if (lock == null) {
+                    log.warn("Seat reservation failed — concurrent request in progress: seatId={}, bookingId={}", seatId, bookingId);
                     throw new BadRequestException("Seat " + seatId + " is being processed by another request");
+                }
                 acquiredLocks.add(lock);
 
                 Seat seat = repo.findById(seatId)
                     .orElseThrow(() -> new ResourceNotFoundException("Seat not found: " + seatId));
-                if (seat.getStatus() != Seat.SeatStatus.AVAILABLE)
+                if (seat.getStatus() != Seat.SeatStatus.AVAILABLE) {
+                    log.warn("Seat reservation failed — seat not available: seatId={}, seatNumber='{}', currentStatus={}, bookingId={}", seatId, seat.getSeatNumber(), seat.getStatus(), bookingId);
                     throw new BadRequestException("Seat " + seat.getSeatNumber() + " is not available");
+                }
 
                 seat.setStatus(Seat.SeatStatus.LOCKED);
                 seat.setLockedByBookingId(bookingId);
                 seat.setLockExpiresAt(Instant.now().plusSeconds(lockMinutes * 60L));
                 seats.add(repo.save(seat));
+                log.debug("Seat locked: seatId={}, seatNumber='{}', bookingId={}, expiresAt={}", seatId, seat.getSeatNumber(), bookingId, seat.getLockExpiresAt());
             }
+            log.info("Seats reserved successfully: bookingId={}, seatIds={}", bookingId, seatIds);
             return seats;
         } finally {
             acquiredLocks.forEach(lockService::release);

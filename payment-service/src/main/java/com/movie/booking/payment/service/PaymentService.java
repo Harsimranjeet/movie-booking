@@ -20,26 +20,36 @@ public class PaymentService {
     private final PaymentRepository repo;
 
     public PaymentResponse getById(UUID id) {
+        log.debug("Fetching payment by id={}", id);
         return toDto(find(id));
     }
 
     public PaymentResponse getByBooking(UUID bid) {
+        log.debug("Fetching payment for bookingId={}", bid);
         return toDto(repo.findByBookingId(bid).orElseThrow(() -> new ResourceNotFoundException("Payment not found for booking: " + bid)));
     }
 
     public List<PaymentResponse> getByUser(UUID uid) {
-        return repo.findByUserId(uid).stream().map(this::toDto).toList();
+        log.debug("Fetching payments for userId={}", uid);
+        List<PaymentResponse> payments = repo.findByUserId(uid).stream().map(this::toDto).toList();
+        log.debug("Found {} payments for userId={}", payments.size(), uid);
+        return payments;
     }
 
     @Transactional
     public PaymentResponse initiate(InitiatePaymentRequest req) {
-        if (repo.findByBookingId(req.getBookingId()).isPresent())
+        log.info("Initiating payment: bookingId={}, userId={}, amount={}, method={}", req.getBookingId(), req.getUserId(), req.getAmount(), req.getMethod());
+        if (repo.findByBookingId(req.getBookingId()).isPresent()) {
+            log.warn("Payment initiation failed — already exists for bookingId={}", req.getBookingId());
             throw new BadRequestException("Payment already initiated for booking: " + req.getBookingId());
+        }
         Payment p = Payment.builder()
             .bookingId(req.getBookingId()).userId(req.getUserId())
             .amount(req.getAmount()).currency(req.getCurrency())
             .method(req.getMethod()).status(Payment.PaymentStatus.PENDING).build();
-        return toDto(repo.save(p));
+        PaymentResponse saved = toDto(repo.save(p));
+        log.info("Payment initiated: id={}, bookingId={}", saved.getId(), saved.getBookingId());
+        return saved;
     }
 
     /**
@@ -73,12 +83,17 @@ public class PaymentService {
 
     @Transactional
     public PaymentResponse refund(RefundRequest req) {
+        log.info("Refund requested: paymentId={}, reason='{}'", req.getPaymentId(), req.getReason());
         Payment p = find(req.getPaymentId());
-        if (p.getStatus() != Payment.PaymentStatus.SUCCESS)
+        if (p.getStatus() != Payment.PaymentStatus.SUCCESS) {
+            log.warn("Refund failed — payment not in SUCCESS state: paymentId={}, currentStatus={}", req.getPaymentId(), p.getStatus());
             throw new BadRequestException("Can only refund successful payments");
+        }
         p.setStatus(Payment.PaymentStatus.REFUNDED);
         p.setGatewayResponse("Refund processed: " + req.getReason());
-        return toDto(repo.save(p));
+        PaymentResponse refunded = toDto(repo.save(p));
+        log.info("Refund processed: paymentId={}, bookingId={}", refunded.getId(), refunded.getBookingId());
+        return refunded;
     }
 
     private Payment find(UUID id) {
