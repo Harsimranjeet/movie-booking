@@ -33,10 +33,10 @@ public class LanguageService {
     }
 
     @Transactional
-    public void delete(UUID id) {
+    public void delete(String id) {
         log.info("Deleting language: id={}", id);
-        if (!repo.existsById(id)) throw new ResourceNotFoundException("Language not found");
-        repo.deleteById(id);
+        if (!repo.existsById(UUID.fromString(id))) throw new ResourceNotFoundException("Language not found");
+        repo.deleteById(UUID.fromString(id));
         log.info("Language deleted: id={}", id);
     }
 }

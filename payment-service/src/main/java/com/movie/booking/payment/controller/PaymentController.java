@@ -30,8 +30,8 @@ public class PaymentController {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Payment retrieved"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Payment not found")
     })
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<PaymentResponse>> getById(@PathVariable UUID id) {
+    @GetMapping
+    public ResponseEntity<ApiResponse<PaymentResponse>> getById(@RequestParam("id") String id) {
         return ResponseEntity.ok(ApiResponse.ok("Payment retrieved", service.getById(id)));
     }
 
@@ -41,9 +41,9 @@ public class PaymentController {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Payment retrieved"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "No payment found for booking")
     })
-    @GetMapping("/booking/{bookingId}")
-    public ResponseEntity<ApiResponse<PaymentResponse>> getByBooking(@PathVariable UUID bookingId) {
-        return ResponseEntity.ok(ApiResponse.ok("Payment retrieved", service.getByBooking(bookingId)));
+    @GetMapping("/booking")
+    public ResponseEntity<ApiResponse<PaymentResponse>> getByBooking(@RequestParam("id") String id) {
+        return ResponseEntity.ok(ApiResponse.ok("Payment retrieved", service.getByBooking(id)));
     }
 
     @Operation(summary = "List payments by user",

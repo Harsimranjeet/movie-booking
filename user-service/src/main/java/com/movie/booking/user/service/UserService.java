@@ -22,9 +22,9 @@ public class UserService {
     private final UserRepository userRepo;
     private final BCryptPasswordEncoder encoder;
 
-    public UserResponse getById(UUID id) {
+    public UserResponse getById(String id) {
         log.debug("Fetching user by id={}", id);
-        return UserResponse.from(findOrThrow(id));
+        return UserResponse.from(findOrThrow(UUID.fromString(id)));
     }
 
     public List<UserResponse> getAll() {
@@ -65,9 +65,9 @@ public class UserService {
     }
 
     @Transactional
-    public void deactivate(UUID id) {
+    public void deactivate(String id) {
         log.info("Deactivating user: userId={}", id);
-        User user = findOrThrow(id);
+        User user = findOrThrow(UUID.fromString(id));
         user.setActive(false);
         userRepo.save(user);
         log.info("User deactivated: userId={}, email='{}'", id, user.getEmail());

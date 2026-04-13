@@ -32,8 +32,8 @@ public class BookingController {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Booking retrieved"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Booking not found")
     })
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<BookingResponse>> getById(@PathVariable UUID id) {
+    @GetMapping
+    public ResponseEntity<ApiResponse<BookingResponse>> getById(@RequestParam("id") String id) {
         return ResponseEntity.ok(ApiResponse.ok("Booking retrieved", service.getById(id)));
     }
 
@@ -43,8 +43,8 @@ public class BookingController {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Booking retrieved"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Booking not found")
     })
-    @GetMapping("/ref/{ref}")
-    public ResponseEntity<ApiResponse<BookingResponse>> getByRef(@PathVariable String ref) {
+    @GetMapping("/ref")
+    public ResponseEntity<ApiResponse<BookingResponse>> getByRef(@RequestParam("ref") String ref) {
         return ResponseEntity.ok(ApiResponse.ok("Booking retrieved", service.getByRef(ref)));
     }
 
@@ -65,10 +65,10 @@ public class BookingController {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Bookings retrieved"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Access denied")
     })
-    @GetMapping("/show/{showId}")
+    @GetMapping("/show")
     @PreAuthorize("hasAnyRole('ADMIN','THEATRE_PARTNER')")
-    public ResponseEntity<ApiResponse<List<BookingResponse>>> getByShow(@PathVariable UUID showId) {
-        return ResponseEntity.ok(ApiResponse.ok("Bookings retrieved", service.getByShow(showId)));
+    public ResponseEntity<ApiResponse<List<BookingResponse>>> getByShow(@RequestParam("id") String id) {
+        return ResponseEntity.ok(ApiResponse.ok("Bookings retrieved", service.getByShow(id)));
     }
 
     @Operation(summary = "Create a booking",

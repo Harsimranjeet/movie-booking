@@ -32,9 +32,9 @@ public class TheatreService {
         return theatres;
     }
 
-    public TheatreResponse getById(UUID id) {
+    public TheatreResponse getById(String id) {
         log.debug("Fetching theatre by id={}", id);
-        return toDto(findTheatre(id));
+        return toDto(findTheatre(UUID.fromString(id)));
     }
 
     public List<TheatreResponse> getByCity(String city) {
@@ -61,14 +61,14 @@ public class TheatreService {
                 .build();
 
         TheatreResponse saved = toDto(theatreRepo.save(theatre));
-        log.info("Theatre created: id={}, name='{}'", saved.getId(), saved.getName());
+        log.info("Theatre created: id={}, name='{}'", saved.id(), saved.name());
         return saved;
     }
 
     @Transactional
-    public TheatreResponse update(UUID id, UpdateTheatreRequest req) {
+    public TheatreResponse update(String id, UpdateTheatreRequest req) {
         log.info("Updating theatre: id={}", id);
-        Theatre theatre = findTheatre(id);
+        Theatre theatre = findTheatre(UUID.fromString(id));
 
         if (req.getName() != null) theatre.setName(req.getName());
         if (req.getAddress() != null) theatre.setAddress(req.getAddress());
@@ -79,24 +79,24 @@ public class TheatreService {
         if (req.getEmail() != null) theatre.setEmail(req.getEmail());
 
         TheatreResponse updated = toDto(theatreRepo.save(theatre));
-        log.info("Theatre updated: id={}, name='{}'", updated.getId(), updated.getName());
+        log.info("Theatre updated: id={}, name='{}'", updated.id(), updated.name());
         return updated;
     }
 
     @Transactional
-    public void delete(UUID id) {
+    public void delete(String id) {
         log.info("Soft-deleting theatre: id={}", id);
-        Theatre theatre = findTheatre(id);
+        Theatre theatre = findTheatre(UUID.fromString(id));
         theatre.setActive(false);
         theatreRepo.save(theatre);
         log.info("Theatre deactivated: id={}, name='{}'", id, theatre.getName());
     }
 
-    public List<ScreenResponse> getScreens(UUID theatreId) {
+    public List<ScreenResponse> getScreens(String theatreId) {
         log.debug("Fetching screens for theatreId={}", theatreId);
-        findTheatre(theatreId);
+        findTheatre(UUID.fromString(theatreId));
 
-        List<ScreenResponse> screens = screenRepo.findByTheatreIdAndActiveTrue(theatreId)
+        List<ScreenResponse> screens = screenRepo.findByTheatreIdAndActiveTrue(UUID.fromString(theatreId))
                 .stream()
                 .map(this::toScreenDto)
                 .toList();
@@ -105,10 +105,10 @@ public class TheatreService {
     }
 
     @Transactional
-    public ScreenResponse addScreen(UUID theatreId, CreateScreenRequest req) {
+    public ScreenResponse addScreen(String theatreId, CreateScreenRequest req) {
         log.info("Adding screen to theatreId={}: name='{}', totalSeats={}, type='{}'",
             theatreId, req.getName(), req.getTotalSeats(), req.getType());
-        findTheatre(theatreId);
+        findTheatre(UUID.fromString(theatreId));
 
         Screen.ScreenType type = Screen.ScreenType.REGULAR;
 
@@ -120,21 +120,21 @@ public class TheatreService {
         }
 
         Screen screen = Screen.builder()
-                .theatreId(theatreId)
+                .theatreId(UUID.fromString(theatreId))
                 .name(req.getName())
                 .totalSeats(req.getTotalSeats())
                 .type(type)
                 .build();
 
         ScreenResponse saved = toScreenDto(screenRepo.save(screen));
-        log.info("Screen added: id={}, theatreId={}, name='{}', type={}", saved.getId(), theatreId, saved.getName(), saved.getType());
+        log.info("Screen added: id={}, theatreId={}, name='{}', type={}", saved.id(), theatreId, saved.name(), saved.type());
         return saved;
     }
 
     @Transactional
-    public void deleteScreen(UUID screenId) {
+    public void deleteScreen(String screenId) {
         log.info("Soft-deleting screen: id={}", screenId);
-        Screen screen = screenRepo.findById(screenId)
+        Screen screen = screenRepo.findById(UUID.fromString(screenId))
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Screen not found: " + screenId)
                 );

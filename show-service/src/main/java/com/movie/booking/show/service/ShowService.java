@@ -17,28 +17,28 @@ public class ShowService {
 
     private final ShowRepository repo;
 
-    public ShowResponse getById(UUID id) {
+    public ShowResponse getById(String id) {
         log.debug("Fetching show by id={}", id);
-        return toDto(find(id));
+        return toDto(find(UUID.fromString(id)));
     }
 
-    public List<ShowResponse> getByMovieAndDate(UUID movieId, LocalDate date) {
+    public List<ShowResponse> getByMovieAndDate(String movieId, LocalDate date) {
         log.debug("Fetching shows for movieId={}, date={}", movieId, date);
-        List<ShowResponse> shows = repo.findByMovieIdAndShowDate(movieId, date).stream().map(this::toDto).toList();
+        List<ShowResponse> shows = repo.findByMovieIdAndShowDate(UUID.fromString(movieId), date).stream().map(this::toDto).toList();
         log.debug("Found {} shows for movieId={} on {}", shows.size(), movieId, date);
         return shows;
     }
 
-    public List<ShowResponse> getByTheatreAndDate(UUID theatreId, LocalDate date) {
+    public List<ShowResponse> getByTheatreAndDate(String theatreId, LocalDate date) {
         log.debug("Fetching shows for theatreId={}, date={}", theatreId, date);
-        List<ShowResponse> shows = repo.findByTheatreIdAndShowDate(theatreId, date).stream().map(this::toDto).toList();
+        List<ShowResponse> shows = repo.findByTheatreIdAndShowDate(UUID.fromString(theatreId), date).stream().map(this::toDto).toList();
         log.debug("Found {} shows for theatreId={} on {}", shows.size(), theatreId, date);
         return shows;
     }
 
-    public List<ShowResponse> getByMovieTheatreDate(UUID movieId, UUID theatreId, LocalDate date) {
+    public List<ShowResponse> getByMovieTheatreDate(String movieId, String theatreId, LocalDate date) {
         log.debug("Fetching shows for movieId={}, theatreId={}, date={}", movieId, theatreId, date);
-        List<ShowResponse> shows = repo.findByMovieIdAndTheatreIdAndShowDate(movieId, theatreId, date).stream().map(this::toDto).toList();
+        List<ShowResponse> shows = repo.findByMovieIdAndTheatreIdAndShowDate(UUID.fromString(movieId), UUID.fromString(theatreId), date).stream().map(this::toDto).toList();
         log.debug("Found {} shows for movieId={}, theatreId={} on {}", shows.size(), movieId, theatreId, date);
         return shows;
     }
@@ -61,14 +61,14 @@ public class ShowService {
             .language(req.getLanguage()).format(req.getFormat()).basePrice(req.getBasePrice())
             .status(Show.ShowStatus.OPEN).build();
         ShowResponse saved = toDto(repo.save(s));
-        log.info("Show created: id={}, movieId={}, date={}", saved.getId(), saved.getMovieId(), saved.getShowDate());
+        log.info("Show created: id={}, movieId={}, date={}", saved.id(), saved.movieId(), saved.showDate());
         return saved;
     }
 
     @Transactional
-    public ShowResponse update(UUID id, UpdateShowRequest req) {
+    public ShowResponse update(String id, UpdateShowRequest req) {
         log.info("Updating show: id={}", id);
-        Show s = find(id);
+        Show s = find(UUID.fromString(id));
         if (req.getShowDate()  != null) s.setShowDate(req.getShowDate());
         if (req.getStartTime() != null) s.setStartTime(req.getStartTime());
         if (req.getEndTime()   != null) s.setEndTime(req.getEndTime());
@@ -79,14 +79,14 @@ public class ShowService {
             try { s.setStatus(Show.ShowStatus.valueOf(req.getStatus())); } catch (Exception ignored) {}
         }
         ShowResponse updated = toDto(repo.save(s));
-        log.info("Show updated: id={}, status={}", updated.getId(), updated.getStatus());
+        log.info("Show updated: id={}, status={}", updated.id(), updated.status());
         return updated;
     }
 
     @Transactional
-    public void cancel(UUID id) {
+    public void cancel(String id) {
         log.info("Cancelling show: id={}", id);
-        Show s = find(id);
+        Show s = find(UUID.fromString(id));
         s.setStatus(Show.ShowStatus.CANCELLED);
         repo.save(s);
         log.info("Show cancelled: id={}", id);

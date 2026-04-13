@@ -36,7 +36,7 @@ public class UserController {
     })
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<UserResponse>> getMe(
-            @Parameter(hidden = true) @RequestHeader("X-User-Id") UUID userId) {
+            @Parameter(hidden = true) @RequestHeader("X-User-Id") String userId) {
         return ResponseEntity.ok(ApiResponse.ok("Profile retrieved", userService.getById(userId)));
     }
 
@@ -47,9 +47,9 @@ public class UserController {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Access denied"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "User not found")
     })
-    @GetMapping("/{id}")
+    @GetMapping(params = "id")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<UserResponse>> getById(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<UserResponse>> getById(@RequestParam("id") String id) {
         return ResponseEntity.ok(ApiResponse.ok("User retrieved", userService.getById(id)));
     }
 
@@ -99,9 +99,9 @@ public class UserController {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Access denied"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "User not found")
     })
-    @DeleteMapping("/{id}")
+    @DeleteMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Void>> deactivate(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<Void>> deactivate(@RequestParam("id") String id) {
         userService.deactivate(id);
         return ResponseEntity.ok(ApiResponse.ok("User deactivated"));
     }

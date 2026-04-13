@@ -23,24 +23,24 @@ public class SeatService {
     private final SeatLockService lockService;
 
 
-    public List<Seat> getByShow(UUID showId) {
+    public List<Seat> getByShow(String showId) {
         log.debug("Fetching all seats for showId={}", showId);
-        List<Seat> seats = repo.findByShowId(showId);
+        List<Seat> seats = repo.findByShowId(UUID.fromString(showId));
         log.debug("Found {} seats for showId={}", seats.size(), showId);
         return seats;
     }
 
-    public List<Seat> getAvailableByShow(UUID showId) {
+    public List<Seat> getAvailableByShow(String showId) {
         log.debug("Fetching available seats for showId={}", showId);
-        List<Seat> seats = repo.findByShowIdAndStatus(showId, Seat.SeatStatus.AVAILABLE);
+        List<Seat> seats = repo.findByShowIdAndStatus(UUID.fromString(showId), Seat.SeatStatus.AVAILABLE);
         log.debug("Found {} available seats for showId={}", seats.size(), showId);
         return seats;
     }
 
-    public List<Seat> getByShowAndCategory(UUID showId, String cat) {
+    public List<Seat> getByShowAndCategory(String showId, String cat) {
         log.debug("Fetching seats for showId={}, category='{}'", showId, cat);
         Seat.SeatCategory c = Seat.SeatCategory.valueOf(cat.toUpperCase());
-        List<Seat> seats = repo.findByShowIdAndCategory(showId, c);
+        List<Seat> seats = repo.findByShowIdAndCategory(UUID.fromString(showId), c);
         log.debug("Found {} seats for showId={}, category='{}'", seats.size(), showId, cat);
         return seats;
     }
@@ -48,11 +48,11 @@ public class SeatService {
     // ── Bulk create seats for a show ──────────────────────────────────────────
 
     @Transactional
-    public List<Seat> createSeatsForShow(UUID showId, UUID screenId,
+    public List<Seat> createSeatsForShow(String showId, String screenId,
                                           List<SeatCreateRequest> requests) {
         List<Seat> seats = requests.stream().map(r ->
             Seat.builder()
-                .showId(showId).screenId(screenId)
+                .showId(UUID.fromString(showId)).screenId(UUID.fromString(screenId))
                 .seatNumber(r.seatNumber()).rowLabel(r.rowLabel())
                 .category(r.category()).price(r.price()).build()
         ).toList();
@@ -99,8 +99,8 @@ public class SeatService {
     // ── Confirm — LOCKED → BOOKED ─────────────────────────────────────────────
 
     @Transactional
-    public void confirmSeats(UUID bookingId) {
-        repo.findByShowId(bookingId).stream()
+    public void confirmSeats(String bookingId) {
+        repo.findByShowId(UUID.fromString(bookingId)).stream()
             .filter(s -> bookingId.equals(s.getLockedByBookingId()))
             .forEach(s -> {
                 s.setStatus(Seat.SeatStatus.BOOKED);
@@ -112,7 +112,7 @@ public class SeatService {
     // ── Release — LOCKED/BOOKED → AVAILABLE ──────────────────────────────────
 
     @Transactional
-    public void releaseSeats(UUID bookingId) {
+    public void releaseSeats(String bookingId) {
         repo.findAll().stream()
             .filter(s -> bookingId.equals(s.getLockedByBookingId()))
             .forEach(s -> {

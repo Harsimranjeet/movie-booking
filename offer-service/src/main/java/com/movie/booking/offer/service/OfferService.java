@@ -28,9 +28,9 @@ public class OfferService {
         return offers;
     }
 
-    public OfferResponse getById(UUID id) {
+    public OfferResponse getById(String id) {
         log.debug("Fetching offer by id={}", id);
-        return toDto(find(id));
+        return toDto(find(UUID.fromString(id)));
     }
 
     @Transactional
@@ -48,14 +48,14 @@ public class OfferService {
             .maxUsesTotal(req.getMaxUsesTotal()).maxUsesPerUser(req.getMaxUsesPerUser())
             .build();
         OfferResponse saved = toDto(repo.save(o));
-        log.info("Offer created: id={}, code='{}'", saved.getId(), saved.getCode());
+        log.info("Offer created: id={}, code='{}'", saved.id(), saved.code());
         return saved;
     }
 
     @Transactional
-    public void deactivate(UUID id) {
+    public void deactivate(String id) {
         log.info("Deactivating offer: id={}", id);
-        Offer o = find(id); o.setActive(false); repo.save(o);
+        Offer o = find(UUID.fromString(id)); o.setActive(false); repo.save(o);
         log.info("Offer deactivated: id={}, code='{}'", id, o.getCode());
     }
 

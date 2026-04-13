@@ -34,8 +34,8 @@ public class ShowController {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Show retrieved"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Show not found")
     })
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<ShowResponse>> getById(@PathVariable UUID id) {
+    @GetMapping
+    public ResponseEntity<ApiResponse<ShowResponse>> getById(@RequestParam("id") String id) {
         return ResponseEntity.ok(ApiResponse.ok("Show retrieved", service.getById(id)));
     }
 
@@ -44,12 +44,18 @@ public class ShowController {
     @ApiResponses({
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Shows retrieved")
     })
-    @GetMapping("/movie/{movieId}")
+    @GetMapping("/movie")
     public ResponseEntity<ApiResponse<List<ShowResponse>>> getByMovie(
-            @PathVariable UUID movieId,
+            @RequestParam("movieId") String movieId,
             @Parameter(description = "Show date in ISO-8601 format (yyyy-MM-dd)")
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        return ResponseEntity.ok(ApiResponse.ok("Shows retrieved", service.getByMovieAndDate(movieId, date)));
+            @RequestParam("date")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+
+        List<ShowResponse> shows = service.getByMovieAndDate(movieId, date);
+
+        return ResponseEntity.ok(
+                ApiResponse.ok("Shows retrieved successfully", shows)
+        );
     }
 
     @Operation(summary = "List shows by theatre and date",
@@ -57,12 +63,18 @@ public class ShowController {
     @ApiResponses({
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Shows retrieved")
     })
-    @GetMapping("/theatre/{theatreId}")
+    @GetMapping("/theatre")
     public ResponseEntity<ApiResponse<List<ShowResponse>>> getByTheatre(
-            @PathVariable UUID theatreId,
+            @RequestParam("theatreId") String theatreId,
             @Parameter(description = "Show date in ISO-8601 format (yyyy-MM-dd)")
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        return ResponseEntity.ok(ApiResponse.ok("Shows retrieved", service.getByTheatreAndDate(theatreId, date)));
+            @RequestParam("date")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+
+        List<ShowResponse> shows = service.getByTheatreAndDate(theatreId, date);
+
+        return ResponseEntity.ok(
+                ApiResponse.ok("Shows retrieved successfully", shows)
+        );
     }
 
     @Operation(summary = "Search shows",
@@ -72,11 +84,18 @@ public class ShowController {
     })
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<List<ShowResponse>>> search(
-            @RequestParam UUID movieId,
-            @RequestParam UUID theatreId,
+            @RequestParam(value = "movieId", required = false) String movieId,
+            @RequestParam(value = "theatreId", required = false) String theatreId,
             @Parameter(description = "Show date in ISO-8601 format (yyyy-MM-dd)")
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        return ResponseEntity.ok(ApiResponse.ok("Shows retrieved", service.getByMovieTheatreDate(movieId, theatreId, date)));
+            @RequestParam("date")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+
+        List<ShowResponse> shows =
+                service.getByMovieTheatreDate(movieId, theatreId, date);
+
+        return ResponseEntity.ok(
+                ApiResponse.ok("Shows retrieved successfully", shows)
+        );
     }
 
     @Operation(summary = "List shows by date",
@@ -84,11 +103,17 @@ public class ShowController {
     @ApiResponses({
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Shows retrieved")
     })
-    @GetMapping("/date/{date}")
+    @GetMapping("/date")
     public ResponseEntity<ApiResponse<List<ShowResponse>>> getByDate(
             @Parameter(description = "Show date in ISO-8601 format (yyyy-MM-dd)")
-            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        return ResponseEntity.ok(ApiResponse.ok("Shows retrieved", service.getByDate(date)));
+            @RequestParam("date")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+
+        List<ShowResponse> shows = service.getByDate(date);
+
+        return ResponseEntity.ok(
+                ApiResponse.ok("Shows retrieved successfully", shows)
+        );
     }
 
     @Operation(summary = "Create a show (Admin/Theatre Partner)",
@@ -111,10 +136,10 @@ public class ShowController {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Access denied"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Show not found")
     })
-    @PutMapping("/{id}")
+    @PutMapping
     @PreAuthorize("hasAnyRole('ADMIN','THEATRE_PARTNER')")
     public ResponseEntity<ApiResponse<ShowResponse>> update(
-            @PathVariable UUID id,
+            @RequestParam("id") String id,
             @RequestBody UpdateShowRequest req) {
         return ResponseEntity.ok(ApiResponse.ok("Show updated", service.update(id, req)));
     }
@@ -126,9 +151,9 @@ public class ShowController {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Access denied"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Show not found")
     })
-    @DeleteMapping("/{id}")
+    @DeleteMapping
     @PreAuthorize("hasAnyRole('ADMIN','THEATRE_PARTNER')")
-    public ResponseEntity<ApiResponse<Void>> cancel(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<Void>> cancel(@RequestParam String id) {
         service.cancel(id);
         return ResponseEntity.ok(ApiResponse.ok("Show cancelled"));
     }

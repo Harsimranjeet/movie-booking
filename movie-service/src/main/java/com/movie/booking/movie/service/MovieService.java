@@ -27,7 +27,7 @@ public class MovieService {
 
     public MovieResponse getById(String id) {
         log.debug("Fetching movie by id={}", id);
-        return toDto(find(id));
+        return toDto(find(UUID.fromString(id)));
     }
 
     public List<MovieResponse> getByLanguage(String lang) {
@@ -61,14 +61,14 @@ public class MovieService {
             .trailerUrl(req.getTrailerUrl()).certification(req.getCertification())
             .build();
         MovieResponse saved = toDto(repo.save(m));
-        log.info("Movie created: id={}, title='{}'", saved.getId(), saved.getTitle());
+        log.info("Movie created: id={}, title='{}'", saved.id(), saved.title());
         return saved;
     }
 
     @Transactional
-    public MovieResponse update(UUID id, UpdateMovieRequest req) {
+    public MovieResponse update(String id, UpdateMovieRequest req) {
         log.info("Updating movie: id={}", id);
-        Movie m = find(String.valueOf(id));
+        Movie m = find(UUID.fromString(id));
         if (req.getTitle() != null) m.setTitle(req.getTitle());
 
         if (req.getDescription() != null) m.setDescription(req.getDescription());
@@ -88,21 +88,21 @@ public class MovieService {
         if (req.getRating() != null) m.setRating(req.getRating());
 
         MovieResponse updated = toDto(repo.save(m));
-        log.info("Movie updated: id={}, title='{}'", updated.getId(), updated.getTitle());
+        log.info("Movie updated: id={}, title='{}'", updated.id(), updated.title());
         return updated;
     }
 
     @Transactional
-    public void delete(UUID id) {
+    public void delete(String id) {
         log.info("Soft-deleting movie: id={}", id);
-        Movie m = find(String.valueOf(id));
+        Movie m = find(UUID.fromString(id));
         m.setActive(false);
         repo.save(m);
         log.info("Movie deactivated: id={}, title='{}'", id, m.getTitle());
     }
 
-    private Movie find(String id) {
-        return repo.findById(UUID.fromString(id)).orElseThrow(() -> new ResourceNotFoundException("Movie not found: " + id));
+    private Movie find(UUID id) {
+        return repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Movie not found: " + id));
     }
 
     private MovieResponse toDto(Movie m) {

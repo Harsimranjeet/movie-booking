@@ -33,10 +33,10 @@ public class GenreService {
     }
 
     @Transactional
-    public void delete(UUID id) {
+    public void delete(String id) {
         log.info("Deleting genre: id={}", id);
-        if (!repo.existsById(id)) throw new ResourceNotFoundException("Genre not found");
-        repo.deleteById(id);
+        if (!repo.existsById(UUID.fromString(id))) throw new ResourceNotFoundException("Genre not found");
+        repo.deleteById(UUID.fromString(id));
         log.info("Genre deleted: id={}", id);
     }
 }

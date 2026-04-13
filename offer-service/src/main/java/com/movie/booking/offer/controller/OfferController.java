@@ -41,8 +41,8 @@ public class OfferController {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Offer retrieved"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Offer not found")
     })
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<OfferResponse>> getById(@PathVariable UUID id) {
+    @GetMapping(params = "id")
+    public ResponseEntity<ApiResponse<OfferResponse>> getById(@RequestParam("id") String id) {
         return ResponseEntity.ok(ApiResponse.ok("Offer retrieved", service.getById(id)));
     }
 
@@ -78,9 +78,9 @@ public class OfferController {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Access denied"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Offer not found")
     })
-    @DeleteMapping("/{id}")
+    @DeleteMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Void>> deactivate(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<Void>> deactivate(@RequestParam ("id") String id) {
         service.deactivate(id);
         return ResponseEntity.ok(ApiResponse.ok("Offer deactivated"));
     }

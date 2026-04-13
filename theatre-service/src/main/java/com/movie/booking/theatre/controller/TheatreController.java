@@ -37,15 +37,15 @@ public class TheatreController {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Theatre retrieved"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Theatre not found")
     })
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<TheatreResponse>> getById(@PathVariable UUID id) {
+    @GetMapping(params = "id")
+    public ResponseEntity<ApiResponse<TheatreResponse>> getById(@RequestParam("id") String id) {
         return ResponseEntity.ok(ApiResponse.ok("Theatre retrieved", service.getById(id)));
     }
 
     @Operation(summary = "List theatres by city", description = "Returns all theatres in the specified city.")
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Theatres retrieved")
-    @GetMapping("/city/{city}")
-    public ResponseEntity<ApiResponse<List<TheatreResponse>>> getByCity(@PathVariable String city) {
+    @GetMapping("/city")
+    public ResponseEntity<ApiResponse<List<TheatreResponse>>> getByCity(@RequestParam("city") String city) {
         return ResponseEntity.ok(ApiResponse.ok("Theatres retrieved", service.getByCity(city)));
     }
 
@@ -69,10 +69,10 @@ public class TheatreController {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Access denied"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Theatre not found")
     })
-    @PutMapping("/{id}")
+    @PutMapping
     @PreAuthorize("hasAnyRole('ADMIN','THEATRE_PARTNER')")
     public ResponseEntity<ApiResponse<TheatreResponse>> update(
-            @PathVariable UUID id, @RequestBody UpdateTheatreRequest req) {
+            @RequestParam("id") String id, @RequestBody UpdateTheatreRequest req) {
         return ResponseEntity.ok(ApiResponse.ok("Theatre updated", service.update(id, req)));
     }
 
@@ -82,9 +82,9 @@ public class TheatreController {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Access denied"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Theatre not found")
     })
-    @DeleteMapping("/{id}")
+    @DeleteMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<Void>> delete(@RequestParam ("id") String id) {
         service.delete(id);
         return ResponseEntity.ok(ApiResponse.ok("Theatre deleted"));
     }
@@ -95,8 +95,8 @@ public class TheatreController {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Screens retrieved"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Theatre not found")
     })
-    @GetMapping("/{theatreId}/screens")
-    public ResponseEntity<ApiResponse<List<ScreenResponse>>> getScreens(@PathVariable UUID theatreId) {
+    @GetMapping("screens")
+    public ResponseEntity<ApiResponse<List<ScreenResponse>>> getScreens(@RequestParam("theatreId") String theatreId) {
         return ResponseEntity.ok(ApiResponse.ok("Screens retrieved", service.getScreens(theatreId)));
     }
 
@@ -108,10 +108,10 @@ public class TheatreController {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Access denied"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Theatre not found")
     })
-    @PostMapping("/{theatreId}/screens")
+    @PostMapping("/screens")
     @PreAuthorize("hasAnyRole('ADMIN','THEATRE_PARTNER')")
     public ResponseEntity<ApiResponse<ScreenResponse>> addScreen(
-            @PathVariable UUID theatreId, @Valid @RequestBody CreateScreenRequest req) {
+            @RequestParam("theatreId") String theatreId, @Valid @RequestBody CreateScreenRequest req) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(ApiResponse.ok("Screen added", service.addScreen(theatreId, req)));
     }
@@ -123,10 +123,10 @@ public class TheatreController {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Access denied"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Screen not found")
     })
-    @DeleteMapping("/screens/{screenId}")
+    @DeleteMapping("/screens")
     @PreAuthorize("hasAnyRole('ADMIN','THEATRE_PARTNER')")
-    public ResponseEntity<ApiResponse<Void>> deleteScreen(@PathVariable UUID screenId) {
-        service.deleteScreen(screenId);
+    public ResponseEntity<ApiResponse<Void>> deleteScreen(@RequestParam ("id") String id) {
+        service.deleteScreen(id);
         return ResponseEntity.ok(ApiResponse.ok("Screen deleted"));
     }
 }

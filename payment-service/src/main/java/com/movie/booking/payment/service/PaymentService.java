@@ -19,14 +19,14 @@ public class PaymentService {
 
     private final PaymentRepository repo;
 
-    public PaymentResponse getById(UUID id) {
+    public PaymentResponse getById(String id) {
         log.debug("Fetching payment by id={}", id);
-        return toDto(find(id));
+        return toDto(find(UUID.fromString(id)));
     }
 
-    public PaymentResponse getByBooking(UUID bid) {
+    public PaymentResponse getByBooking(String bid) {
         log.debug("Fetching payment for bookingId={}", bid);
-        return toDto(repo.findByBookingId(bid).orElseThrow(() -> new ResourceNotFoundException("Payment not found for booking: " + bid)));
+        return toDto(repo.findByBookingId(UUID.fromString(bid)).orElseThrow(() -> new ResourceNotFoundException("Payment not found for booking: " + bid)));
     }
 
     public List<PaymentResponse> getByUser(UUID uid) {
@@ -48,7 +48,7 @@ public class PaymentService {
             .amount(req.getAmount()).currency(req.getCurrency())
             .method(req.getMethod()).status(Payment.PaymentStatus.PENDING).build();
         PaymentResponse saved = toDto(repo.save(p));
-        log.info("Payment initiated: id={}, bookingId={}", saved.getId(), saved.getBookingId());
+        log.info("Payment initiated: id={}, bookingId={}", saved.id(), saved.bookingId());
         return saved;
     }
 
@@ -92,7 +92,7 @@ public class PaymentService {
         p.setStatus(Payment.PaymentStatus.REFUNDED);
         p.setGatewayResponse("Refund processed: " + req.getReason());
         PaymentResponse refunded = toDto(repo.save(p));
-        log.info("Refund processed: paymentId={}, bookingId={}", refunded.getId(), refunded.getBookingId());
+        log.info("Refund processed: paymentId={}, bookingId={}", refunded.id(), refunded.bookingId());
         return refunded;
     }
 

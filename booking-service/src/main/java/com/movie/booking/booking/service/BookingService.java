@@ -19,9 +19,9 @@ public class BookingService {
 
     private final BookingRepository repo;
 
-    public BookingResponse getById(UUID id) {
+    public BookingResponse getById(String id) {
         log.debug("Fetching booking by id={}", id);
-        return toDto(find(id));
+        return toDto(find(UUID.fromString(id)));
     }
 
     public BookingResponse getByRef(String ref) {
@@ -36,9 +36,9 @@ public class BookingService {
         return bookings;
     }
 
-    public List<BookingResponse> getByShow(UUID sid) {
+    public List<BookingResponse> getByShow(String sid) {
         log.debug("Fetching bookings for showId={}", sid);
-        List<BookingResponse> bookings = repo.findByShowId(sid).stream().map(this::toDto).toList();
+        List<BookingResponse> bookings = repo.findByShowId(UUID.fromString(sid)).stream().map(this::toDto).toList();
         log.debug("Found {} bookings for showId={}", bookings.size(), sid);
         return bookings;
     }

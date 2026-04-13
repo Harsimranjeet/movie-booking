@@ -29,9 +29,9 @@ public class SeatController {
     @ApiResponses({
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Seats retrieved")
     })
-    @GetMapping("/show/{showId}")
-    public ResponseEntity<ApiResponse<List<Seat>>> getByShow(@PathVariable UUID showId) {
-        return ResponseEntity.ok(ApiResponse.ok("Seats retrieved", service.getByShow(showId)));
+    @GetMapping("/show")
+    public ResponseEntity<ApiResponse<List<Seat>>> getByShow(@RequestParam("id") String id) {
+        return ResponseEntity.ok(ApiResponse.ok("Seats retrieved", service.getByShow(id)));
     }
 
     @Operation(summary = "List available seats for a show",
@@ -39,9 +39,9 @@ public class SeatController {
     @ApiResponses({
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Available seats retrieved")
     })
-    @GetMapping("/show/{showId}/available")
-    public ResponseEntity<ApiResponse<List<Seat>>> getAvailable(@PathVariable UUID showId) {
-        return ResponseEntity.ok(ApiResponse.ok("Available seats", service.getAvailableByShow(showId)));
+    @GetMapping("/show/available")
+    public ResponseEntity<ApiResponse<List<Seat>>> getAvailable(@RequestParam("id") String id) {
+        return ResponseEntity.ok(ApiResponse.ok("Available seats", service.getAvailableByShow(id)));
     }
 
     @Operation(summary = "List seats by show and category",
@@ -49,10 +49,10 @@ public class SeatController {
     @ApiResponses({
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Seats retrieved")
     })
-    @GetMapping("/show/{showId}/category/{category}")
+    @GetMapping("/show/category")
     public ResponseEntity<ApiResponse<List<Seat>>> getByCategory(
-            @PathVariable UUID showId,
-            @PathVariable String category) {
+            @RequestParam("showId") String showId,
+            @RequestParam("category") String category) {
         return ResponseEntity.ok(ApiResponse.ok("Seats retrieved", service.getByShowAndCategory(showId, category)));
     }
 
@@ -62,10 +62,10 @@ public class SeatController {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "Seats created"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Validation error")
     })
-    @PostMapping("/show/{showId}/bulk")
+    @PostMapping("/show/bulk")
     public ResponseEntity<ApiResponse<List<Seat>>> createBulk(
-            @PathVariable UUID showId,
-            @RequestParam UUID screenId,
+            @RequestParam("showId") String showId,
+            @RequestParam("screenId") String screenId,
             @RequestBody List<SeatService.SeatCreateRequest> requests) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(ApiResponse.ok("Seats created", service.createSeatsForShow(showId, screenId, requests)));
@@ -93,8 +93,8 @@ public class SeatController {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Seats confirmed"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "No reserved seats found for booking")
     })
-    @PostMapping("/confirm/{bookingId}")
-    public ResponseEntity<ApiResponse<Void>> confirm(@PathVariable UUID bookingId) {
+    @PostMapping("/confirm")
+    public ResponseEntity<ApiResponse<Void>> confirm(@RequestParam("bookingId") String bookingId) {
         service.confirmSeats(bookingId);
         return ResponseEntity.ok(ApiResponse.ok("Seats confirmed"));
     }
@@ -105,9 +105,9 @@ public class SeatController {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Seats released"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "No reserved seats found for booking")
     })
-    @PostMapping("/release/{bookingId}")
-    public ResponseEntity<ApiResponse<Void>> release(@PathVariable UUID bookingId) {
-        service.releaseSeats(bookingId);
+    @PostMapping("/release")
+    public ResponseEntity<ApiResponse<Void>> release(@RequestParam("id") String id) {
+        service.releaseSeats(id);
         return ResponseEntity.ok(ApiResponse.ok("Seats released"));
     }
 }
