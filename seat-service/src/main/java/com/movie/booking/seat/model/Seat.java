@@ -40,6 +40,11 @@ public class Seat {
 
     @Version private Long version;
 
-    public enum SeatCategory { REGULAR, PREMIUM, VIP, RECLINER }
-    public enum SeatStatus   { AVAILABLE, LOCKED, BOOKED, MAINTENANCE }
+    public enum SeatCategory {
+        REGULAR, PREMIUM, VIP, RECLINER
+    }
+
+    public enum SeatStatus   {
+        AVAILABLE, LOCKED, BOOKED, MAINTENANCE
+    }
 }

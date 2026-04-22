@@ -55,10 +55,9 @@ public class MovieService {
     public MovieResponse create(CreateMovieRequest req) {
         log.info("Creating movie: title='{}', language='{}', genre='{}'", req.getTitle(), req.getLanguage(), req.getGenre());
         Movie m = Movie.builder()
-            .title(req.getTitle()).description(req.getDescription())
+            .title(req.getTitle())
             .language(req.getLanguage()).genre(req.getGenre())
-            .durationMins(req.getDurationMins()).posterUrl(req.getPosterUrl())
-            .trailerUrl(req.getTrailerUrl()).certification(req.getCertification())
+            .durationMins(req.getDurationMins())
             .build();
         MovieResponse saved = toDto(repo.save(m));
         log.info("Movie created: id={}, title='{}'", saved.id(), saved.title());
@@ -70,21 +69,9 @@ public class MovieService {
         log.info("Updating movie: id={}", id);
         Movie m = find(UUID.fromString(id));
         if (req.getTitle() != null) m.setTitle(req.getTitle());
-
-        if (req.getDescription() != null) m.setDescription(req.getDescription());
-
         if (req.getLanguage() != null) m.setLanguage(req.getLanguage());
-
         if (req.getGenre() != null) m.setGenre(req.getGenre());
-
-        if (req.getDurationMins()  > 0) m.setDurationMins(req.getDurationMins());
-
-        if (req.getPosterUrl() != null) m.setPosterUrl(req.getPosterUrl());
-
-        if (req.getTrailerUrl() != null) m.setTrailerUrl(req.getTrailerUrl());
-
-        if (req.getCertification() != null) m.setCertification(req.getCertification());
-
+        if (req.getDurationMins() > 0) m.setDurationMins(req.getDurationMins());
         if (req.getRating() != null) m.setRating(req.getRating());
 
         MovieResponse updated = toDto(repo.save(m));
@@ -106,8 +93,8 @@ public class MovieService {
     }
 
     private MovieResponse toDto(Movie m) {
-        return new MovieResponse(m.getId(), m.getTitle(), m.getDescription(),
-            m.getLanguage(), m.getGenre(), m.getDurationMins(), m.getPosterUrl(),
-            m.getTrailerUrl(), m.getCertification(), m.getRating(), m.isActive(), m.getCreatedAt());
+        return new MovieResponse(m.getId(), m.getTitle(),
+            m.getLanguage(), m.getGenre(), m.getDurationMins(),
+            m.getRating(), m.isActive(), m.getCreatedAt());
     }
 }

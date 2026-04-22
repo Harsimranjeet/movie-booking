@@ -11,13 +11,16 @@ public class UserDtos {
 
     @Data
     public static class SignUpRequest {
-        @NotBlank @Size(min = 2, max = 100)
+        @NotBlank
+        @Size(min = 2, max = 100)
         private String fullName;
 
-        @NotBlank @Email
+        @NotBlank
+        @Email
         private String email;
 
-        @NotBlank @Size(min = 8)
+        @NotBlank
+        @Size(min = 8)
         @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d).+$",
                  message = "Password must contain letters and numbers")
         private String password;
@@ -30,6 +33,7 @@ public class UserDtos {
 
     @Data
     public static class LoginRequest {
+
         @NotBlank(message = "Email or phone required")
         private String identifier;
 
@@ -55,16 +59,16 @@ public class UserDtos {
     public record AuthResponse(
         String accessToken,
         String tokenType,
-        long   expiresIn,
+        long expiresIn,
         UserResponse user
     ) {}
 
     public record UserResponse(
-        UUID    id,
-        String  fullName,
-        String  email,
-        String  phone,
-        String  role,
+        UUID id,
+        String fullName,
+        String email,
+        String phone,
+        String role,
         boolean active,
         Instant createdAt
     ) {

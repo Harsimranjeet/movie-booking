@@ -10,7 +10,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor @Builder
+@AllArgsConstructor
+@Builder
 public class Genre implements Persistable<UUID> {
 
     @Id
@@ -21,12 +22,21 @@ public class Genre implements Persistable<UUID> {
     @Builder.Default
     private boolean isNew = true;
 
-    @PostPersist @PostLoad
-    void markNotNew() { this.isNew = false; }
+    @PostPersist
+    @PostLoad
+    void markNotNew() {
+        this.isNew = false;
+    }
 
-    @Override public UUID getId() { return id; }
-    @Override public boolean isNew() { return isNew; }
+    @Override
+    public UUID getId() {
+        return id;
+    }
+    @Override
+    public boolean isNew() {
+        return isNew;
+    }
 
-    @Column(nullable=false, unique=true) private String name;
-    private String description;
+    @Column(nullable=false, unique=true)
+    private String name;
 }

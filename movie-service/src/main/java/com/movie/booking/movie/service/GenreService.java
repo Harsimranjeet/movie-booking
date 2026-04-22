@@ -25,9 +25,9 @@ public class GenreService {
     }
 
     @Transactional
-    public Genre create(String name, String description) {
+    public Genre create(String name) {
         log.info("Creating genre: name='{}'", name);
-        Genre saved = repo.save(Genre.builder().name(name).description(description).build());
+        Genre saved = repo.save(Genre.builder().name(name).build());
         log.info("Genre created: id={}, name='{}'", saved.getId(), saved.getName());
         return saved;
     }

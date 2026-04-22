@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.nio.channels.FileLock;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +19,7 @@ import java.util.UUID;
 public class SeatService {
 
     private final SeatRepository repo;
-    private final SeatLockService lockService;
+    private final SeatLockStrategy lockService;
 
 
     public List<Seat> getByShow(String showId) {
@@ -64,17 +63,17 @@ public class SeatService {
     @Transactional
     public List<Seat> reserveSeats(List<UUID> seatIds, UUID bookingId, int lockMinutes) {
         log.info("Reserving seats: bookingId={}, seatCount={}, lockMinutes={}", bookingId, seatIds.size(), lockMinutes);
-        List<FileLock> acquiredLocks = new ArrayList<>();
+        List<UUID> acquiredLocks = new ArrayList<>();
         List<Seat> seats = new ArrayList<>();
 
         try {
             for (UUID seatId : seatIds) {
-                FileLock lock = lockService.tryLock(seatId);
-                if (lock == null) {
+                boolean locked = lockService.tryLock(seatId, bookingId);
+                if (!locked) {
                     log.warn("Seat reservation failed — concurrent request in progress: seatId={}, bookingId={}", seatId, bookingId);
                     throw new BadRequestException("Seat " + seatId + " is being processed by another request");
                 }
-                acquiredLocks.add(lock);
+                acquiredLocks.add(seatId);
 
                 Seat seat = repo.findById(seatId)
                     .orElseThrow(() -> new ResourceNotFoundException("Seat not found: " + seatId));

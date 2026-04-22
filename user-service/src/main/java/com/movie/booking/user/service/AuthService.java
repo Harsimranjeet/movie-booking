@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
 
     private final UserRepository userRepo;
-    private final JwtUtil        jwtUtil;
+    private final JwtUtil jwtUtil;
     private final BCryptPasswordEncoder encoder;
 
     @Transactional
@@ -52,7 +52,7 @@ public class AuthService {
         return buildAuthResponse(user);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public AuthResponse login(LoginRequest req) {
         log.info("Login attempt: identifier='{}'", req.getIdentifier());
         User user = userRepo.findByEmailOrPhone(req.getIdentifier(), req.getIdentifier())

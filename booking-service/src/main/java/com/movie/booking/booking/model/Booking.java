@@ -18,28 +18,13 @@ public class Booking {
     @Column(nullable=false)
     private UUID showId;
 
-    @Column(nullable=false)
-    private UUID theatreId;
-
-    @Column(nullable=false)
-    private UUID movieId;
-
     @ElementCollection
     @CollectionTable(name="booking_seats", joinColumns=@JoinColumn(name="booking_id"))
     @Column(name="seat_id")
     private List<UUID> seatIds;
 
     @Column(nullable=false)
-    private int ticketCount;
-
-    @Column(nullable=false)
-    private double totalAmount;
-
-    private double discountAmount;
-
     private double finalAmount;
-
-    private String offerCode;
 
     @Enumerated(EnumType.STRING) @Builder.Default
     private BookingStatus status = BookingStatus.PENDING;
@@ -47,10 +32,6 @@ public class Booking {
     @Column(unique=true) private String bookingRef;
 
     @CreationTimestamp private Instant createdAt;
-
-    private Instant confirmedAt;
-
-    private Instant cancelledAt;
 
     public enum BookingStatus { PENDING, CONFIRMED, CANCELLED, EXPIRED }
 }

@@ -11,7 +11,11 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "users")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class User implements Persistable<UUID> {
 
     @Id
@@ -22,11 +26,20 @@ public class User implements Persistable<UUID> {
     @Builder.Default
     private boolean isNew = true;
 
-    @PostPersist @PostLoad
-    void markNotNew() { this.isNew = false; }
+    @PostPersist
+    @PostLoad
+    void markNotNew() {
+        this.isNew = false;
+    }
 
-    @Override public UUID getId() { return id; }
-    @Override public boolean isNew() { return isNew; }
+    @Override
+    public UUID getId() {
+        return id;
+    }
+    @Override
+    public boolean isNew() {
+        return isNew;
+    }
 
     @Column(nullable = false, length = 100)
     private String fullName;

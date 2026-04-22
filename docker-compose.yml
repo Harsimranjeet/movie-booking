@@ -4,12 +4,26 @@ version: '3.8'
 x-common-env: &common-env
   EUREKA_URL: http://discovery-server:8761/eureka/
   JWT_SECRET: mySecretKeyForMovieBookingPlatformMinimum256BitsLong
+  REDIS_HOST: redis
+  REDIS_PORT: 6379
 
 x-common-depends: &common-depends
   discovery-server:
     condition: service_healthy
 
 services:
+
+  # ── Redis (distributed seat locking) ─────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
 
   # ── Service Registry ─────────────────────────────────────────────────────────
   discovery-server:
@@ -105,6 +119,8 @@ services:
       SERVER_PORT: 8085
     depends_on:
       <<: *common-depends
+      redis:
+        condition: service_healthy
 
   booking-service:
     build:

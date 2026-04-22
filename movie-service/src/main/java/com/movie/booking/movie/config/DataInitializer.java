@@ -45,111 +45,51 @@ public class DataInitializer implements ApplicationRunner {
     }
 
     private void seedLanguages() {
-        languageRepo.save(Language.builder().code("en").name("English").build());
-        languageRepo.save(Language.builder().code("hi").name("Hindi").build());
-        languageRepo.save(Language.builder().code("ta").name("Tamil").build());
-        languageRepo.save(Language.builder().code("te").name("Telugu").build());
-        languageRepo.save(Language.builder().code("kn").name("Kannada").build());
+        languageRepo.save(Language.builder().name("English").build());
+        languageRepo.save(Language.builder().name("Hindi").build());
+        languageRepo.save(Language.builder().name("Tamil").build());
+        languageRepo.save(Language.builder().name("Telugu").build());
+        languageRepo.save(Language.builder().name("Kannada").build());
     }
 
     private void seedGenres() {
-        genreRepo.save(Genre.builder().name("Action").description("High-octane action films").build());
-        genreRepo.save(Genre.builder().name("Sci-Fi").description("Science fiction and futuristic stories").build());
-        genreRepo.save(Genre.builder().name("Drama").description("Character-driven emotional narratives").build());
-        genreRepo.save(Genre.builder().name("Thriller").description("Suspense and tension-filled stories").build());
-        genreRepo.save(Genre.builder().name("Comedy").description("Light-hearted and humorous films").build());
-        genreRepo.save(Genre.builder().name("Biography").description("Based on real-life stories").build());
+        genreRepo.save(Genre.builder().name("Action").build());
+        genreRepo.save(Genre.builder().name("Sci-Fi").build());
+        genreRepo.save(Genre.builder().name("Drama").build());
+        genreRepo.save(Genre.builder().name("Thriller").build());
+        genreRepo.save(Genre.builder().name("Comedy").build());
+        genreRepo.save(Genre.builder().name("Biography").build());
     }
 
     private void seedMovies() {
-        // Inception
-        Movie m1 = Movie.builder()
-            .title("Inception").language("English").genre("Sci-Fi")
-            .description("A thief who enters the dreams of others to steal secrets from their subconscious.")
-            .durationMins(148).certification("UA").rating(8.8)
-            .posterUrl("https://example.com/posters/inception.jpg")
-            .trailerUrl("https://youtube.com/watch?v=inception").build();
+        Movie m1 = Movie.builder().title("Inception").language("English").genre("Sci-Fi").durationMins(148).rating(8.8).build();
         m1.setId(M1); movieRepo.save(m1);
 
-        // Interstellar
-        Movie m2 = Movie.builder()
-            .title("Interstellar").language("English").genre("Sci-Fi")
-            .description("A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival.")
-            .durationMins(169).certification("UA").rating(8.6)
-            .posterUrl("https://example.com/posters/interstellar.jpg")
-            .trailerUrl("https://youtube.com/watch?v=interstellar").build();
+        Movie m2 = Movie.builder().title("Interstellar").language("English").genre("Sci-Fi").durationMins(169).rating(8.6).build();
         m2.setId(M2); movieRepo.save(m2);
 
-        // The Dark Knight
-        Movie m3 = Movie.builder()
-            .title("The Dark Knight").language("English").genre("Action")
-            .description("Batman faces the Joker, a criminal mastermind who wants to plunge Gotham City into anarchy.")
-            .durationMins(152).certification("UA").rating(9.0)
-            .posterUrl("https://example.com/posters/dark-knight.jpg")
-            .trailerUrl("https://youtube.com/watch?v=darkknight").build();
+        Movie m3 = Movie.builder().title("The Dark Knight").language("English").genre("Action").durationMins(152).rating(9.0).build();
         m3.setId(M3); movieRepo.save(m3);
 
-        // Avengers: Endgame
-        Movie m4 = Movie.builder()
-            .title("Avengers: Endgame").language("English").genre("Action")
-            .description("After the devastating events of Infinity War, the Avengers assemble once more to reverse Thanos's actions.")
-            .durationMins(181).certification("UA").rating(8.4)
-            .posterUrl("https://example.com/posters/endgame.jpg")
-            .trailerUrl("https://youtube.com/watch?v=endgame").build();
+        Movie m4 = Movie.builder().title("Avengers: Endgame").language("English").genre("Action").durationMins(181).rating(8.4).build();
         m4.setId(M4); movieRepo.save(m4);
 
-        // RRR
-        Movie m5 = Movie.builder()
-            .title("RRR").language("Telugu").genre("Action")
-            .description("A fictitious story about two legendary revolutionaries and their journey away from home.")
-            .durationMins(187).certification("UA").rating(8.0)
-            .posterUrl("https://example.com/posters/rrr.jpg")
-            .trailerUrl("https://youtube.com/watch?v=rrr").build();
+        Movie m5 = Movie.builder().title("RRR").language("Telugu").genre("Action").durationMins(187).rating(8.0).build();
         m5.setId(M5); movieRepo.save(m5);
 
-        // Oppenheimer
-        Movie m6 = Movie.builder()
-            .title("Oppenheimer").language("English").genre("Biography")
-            .description("The story of American scientist J. Robert Oppenheimer and his role in the development of the atomic bomb.")
-            .durationMins(180).certification("A").rating(8.5)
-            .posterUrl("https://example.com/posters/oppenheimer.jpg")
-            .trailerUrl("https://youtube.com/watch?v=oppenheimer").build();
+        Movie m6 = Movie.builder().title("Oppenheimer").language("English").genre("Biography").durationMins(180).rating(8.5).build();
         m6.setId(M6); movieRepo.save(m6);
 
-        // Pathaan
-        Movie m7 = Movie.builder()
-            .title("Pathaan").language("Hindi").genre("Action")
-            .description("An Indian spy takes on the leader of a rogue mercenary organisation.")
-            .durationMins(146).certification("UA").rating(6.0)
-            .posterUrl("https://example.com/posters/pathaan.jpg")
-            .trailerUrl("https://youtube.com/watch?v=pathaan").build();
+        Movie m7 = Movie.builder().title("Pathaan").language("Hindi").genre("Action").durationMins(146).rating(6.0).build();
         m7.setId(M7); movieRepo.save(m7);
 
-        // KGF Chapter 2
-        Movie m8 = Movie.builder()
-            .title("KGF: Chapter 2").language("Kannada").genre("Action")
-            .description("Rocky takes control of the Kolar Gold Fields and his bloodlust brings him into conflict with Ramika Sen.")
-            .durationMins(168).certification("A").rating(8.2)
-            .posterUrl("https://example.com/posters/kgf2.jpg")
-            .trailerUrl("https://youtube.com/watch?v=kgf2").build();
+        Movie m8 = Movie.builder().title("KGF: Chapter 2").language("Kannada").genre("Action").durationMins(168).rating(8.2).build();
         m8.setId(M8); movieRepo.save(m8);
 
-        // Brahmastra
-        Movie m9 = Movie.builder()
-            .title("Brahmastra: Part One – Shiva").language("Hindi").genre("Action")
-            .description("Shiva discovers he has a strange connection with the element of Fire and the ancient weapon Brahmastra.")
-            .durationMins(167).certification("UA").rating(5.6)
-            .posterUrl("https://example.com/posters/brahmastra.jpg")
-            .trailerUrl("https://youtube.com/watch?v=brahmastra").build();
+        Movie m9 = Movie.builder().title("Brahmastra: Part One – Shiva").language("Hindi").genre("Action").durationMins(167).rating(5.6).build();
         m9.setId(M9); movieRepo.save(m9);
 
-        // Animal
-        Movie m10 = Movie.builder()
-            .title("Animal").language("Hindi").genre("Action")
-            .description("A son's all-consuming obsession with his estranged father leads him down a dark path of violence.")
-            .durationMins(201).certification("A").rating(7.2)
-            .posterUrl("https://example.com/posters/animal.jpg")
-            .trailerUrl("https://youtube.com/watch?v=animal").build();
+        Movie m10 = Movie.builder().title("Animal").language("Hindi").genre("Action").durationMins(201).rating(7.2).build();
         m10.setId(M10); movieRepo.save(m10);
     }
 }

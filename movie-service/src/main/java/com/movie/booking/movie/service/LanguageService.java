@@ -25,10 +25,10 @@ public class LanguageService {
     }
 
     @Transactional
-    public Language create(String code, String name) {
-        log.info("Creating language: code='{}', name='{}'", code, name);
-        Language saved = repo.save(Language.builder().code(code).name(name).build());
-        log.info("Language created: id={}, code='{}'", saved.getId(), saved.getCode());
+    public Language create(String name) {
+        log.info("Creating language: name='{}'", name);
+        Language saved = repo.save(Language.builder().name(name).build());
+        log.info("Language created: id={}, name='{}'", saved.getId(), saved.getName());
         return saved;
     }
 

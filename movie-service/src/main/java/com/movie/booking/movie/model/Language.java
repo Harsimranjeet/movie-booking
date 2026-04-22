@@ -21,15 +21,20 @@ public class Language implements Persistable<UUID> {
     @Builder.Default
     private boolean isNew = true;
 
-    @PostPersist @PostLoad
+    @PostPersist
+    @PostLoad
     void markNotNew() { this.isNew = false; }
 
-    @Override public UUID getId() { return id; }
-    @Override public boolean isNew() { return isNew; }
+    @Override
+    public UUID getId() {
+        return id;
+    }
+
+    @Override
+    public boolean isNew() {
+        return isNew;
+    }
 
     @Column(nullable=false, unique=true)
-    private String code;
-
-    @Column(nullable=false)
     private String name;
 }

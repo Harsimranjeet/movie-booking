@@ -12,7 +12,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor @Builder
+@AllArgsConstructor
+@Builder
 public class Movie implements Persistable<UUID> {
     @Id
     @Builder.Default
@@ -22,17 +23,24 @@ public class Movie implements Persistable<UUID> {
     @Builder.Default
     private boolean isNew = true;
 
-    @PostPersist @PostLoad
-    void markNotNew() { this.isNew = false; }
+    @PostPersist
+    @PostLoad
+    void markNotNew() {
+        this.isNew = false;
+    }
 
-    @Override public UUID getId() { return id; }
-    @Override public boolean isNew() { return isNew; }
+    @Override
+    public UUID getId() {
+        return id;
+    }
+
+    @Override
+    public boolean isNew() {
+        return isNew;
+    }
 
     @Column(nullable=false)
     private String title;
-
-    @Column(length=2000)
-    private String description;
 
     @Column(nullable=false)
     private String language;
@@ -41,12 +49,6 @@ public class Movie implements Persistable<UUID> {
     private String genre;
 
     private int durationMins;
-
-    private String posterUrl;
-
-    private String trailerUrl;
-
-    private String certification;
 
     private double rating;
 

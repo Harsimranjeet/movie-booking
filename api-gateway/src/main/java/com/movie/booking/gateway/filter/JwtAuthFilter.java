@@ -30,13 +30,13 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
 
     // Paths that don't need a token
     private static final List<String> PUBLIC_PATHS = List.of(
-        "/api/v1/auth/login",
-        "/api/v1/auth/signup",
-        "/actuator",
-        "/swagger-ui",
-        "/v3/api-docs",
-        "/webjars",
-        "/docs/"
+            "/api/v1/auth/login",
+            "/api/v1/auth/signup",
+            "/actuator",
+            "/swagger-ui",
+            "/v3/api-docs",
+            "/webjars",
+            "/docs/"
     );
 
     @Override
@@ -57,9 +57,9 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
             Claims claims = parseToken(authHeader.substring(7));
             // Inject user context for downstream services
             ServerHttpRequest mutated = exchange.getRequest().mutate()
-                .header("X-User-Id",   claims.getSubject())
-                .header("X-User-Role", claims.get("role", String.class))
-                .build();
+                    .header("X-User-Id",   claims.getSubject())
+                    .header("X-User-Role", claims.get("role", String.class))
+                    .build();
             return chain.filter(exchange.mutate().request(mutated).build());
         } catch (JwtException e) {
             log.warn("JWT validation failed: {}", e.getMessage());
@@ -75,7 +75,7 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
     private Claims parseToken(String token) {
         SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
         return Jwts.parser().verifyWith(key).build()
-            .parseSignedClaims(token).getPayload();
+                .parseSignedClaims(token).getPayload();
     }
 
     private Mono<Void> reject(ServerWebExchange exchange, String message) {

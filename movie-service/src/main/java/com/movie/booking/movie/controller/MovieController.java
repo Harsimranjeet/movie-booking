@@ -121,7 +121,7 @@ public class MovieController {
     }
 
     @Operation(summary = "Create a genre (Admin)",
-               description = "Adds a new genre. Body: `{ \"name\": \"Action\", \"description\": \"...\" }`. Requires ADMIN role.")
+               description = "Adds a new genre. Body: `{ \"name\": \"Action\" }`. Requires ADMIN role.")
     @ApiResponses({
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "Genre created"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Access denied")
@@ -131,7 +131,7 @@ public class MovieController {
     public ResponseEntity<ApiResponse<Genre>> createGenre(@RequestBody Map<String, String> body) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(ApiResponse.ok("Genre created",
-                genreService.create(body.get("name"), body.get("description"))));
+                genreService.create(body.get("name"))));
     }
 
     @Operation(summary = "Delete a genre (Admin)", description = "Removes a genre by ID. Requires ADMIN role.")
@@ -155,7 +155,7 @@ public class MovieController {
     }
 
     @Operation(summary = "Create a language (Admin)",
-               description = "Adds a new language. Body: `{ \"code\": \"en\", \"name\": \"English\" }`. Requires ADMIN role.")
+               description = "Adds a new language. Body: `{ \"name\": \"English\" }`. Requires ADMIN role.")
     @ApiResponses({
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "Language created"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Access denied")
@@ -165,7 +165,7 @@ public class MovieController {
     public ResponseEntity<ApiResponse<Language>> createLanguage(@RequestBody Map<String, String> body) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(ApiResponse.ok("Language created",
-                languageService.create(body.get("code"), body.get("name"))));
+                languageService.create(body.get("name"))));
     }
 
     @Operation(summary = "Delete a language (Admin)", description = "Removes a language by ID. Requires ADMIN role.")

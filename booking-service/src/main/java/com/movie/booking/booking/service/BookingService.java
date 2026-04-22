@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -48,18 +47,11 @@ public class BookingService {
 
     @Transactional
     public BookingResponse create(UUID userId, CreateBookingRequest req) {
-        if (req.getSeatIds().size() != req.getTicketCount())
-            throw new BadRequestException("Seat count does not match ticket count");
-
         String ref = "BK" + System.currentTimeMillis() + UUID.randomUUID().toString().substring(0, 4).toUpperCase();
 
         Booking b = Booking.builder()
             .userId(userId).showId(req.getShowId())
-            .theatreId(req.getTheatreId()).movieId(req.getMovieId())
-            .seatIds(req.getSeatIds()).ticketCount(req.getTicketCount())
-            .totalAmount(req.getTotalAmount())
-            .discountAmount(0).finalAmount(req.getTotalAmount())
-            .offerCode(req.getOfferCode())
+            .seatIds(req.getSeatIds()).finalAmount(req.getFinalAmount())
             .status(Booking.BookingStatus.PENDING)
             .bookingRef(ref).build();
 
@@ -82,7 +74,6 @@ public class BookingService {
         if (b.getStatus() != Booking.BookingStatus.PENDING)
             throw new BadRequestException("Booking is not in PENDING state");
         b.setStatus(Booking.BookingStatus.CONFIRMED);
-        b.setConfirmedAt(Instant.now());
         Booking saved = repo.save(b);
 
         // Mark seats as BOOKED in seat-service
@@ -100,7 +91,6 @@ public class BookingService {
         if (b.getStatus() == Booking.BookingStatus.CANCELLED)
             throw new BadRequestException("Booking is already cancelled");
         b.setStatus(Booking.BookingStatus.CANCELLED);
-        b.setCancelledAt(Instant.now());
         Booking saved = repo.save(b);
 
         // Release seats back to AVAILABLE in seat-service
@@ -114,9 +104,8 @@ public class BookingService {
         return repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Booking not found: " + id));
     }
     private BookingResponse toDto(Booking b) {
-        return new BookingResponse(b.getId(),b.getUserId(),b.getShowId(),b.getTheatreId(),
-            b.getMovieId(),b.getSeatIds(),b.getTicketCount(),b.getTotalAmount(),
-            b.getDiscountAmount(),b.getFinalAmount(),b.getOfferCode(),b.getStatus(),
-            b.getBookingRef(),b.getCreatedAt(),b.getConfirmedAt(),b.getCancelledAt());
+        return new BookingResponse(b.getId(), b.getUserId(), b.getShowId(),
+            b.getSeatIds(), b.getFinalAmount(), b.getStatus(),
+            b.getBookingRef(), b.getCreatedAt());
     }
 }
